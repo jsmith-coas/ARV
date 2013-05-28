@@ -3,6 +3,9 @@
 #define THISFIRMWARE "ArduRover v2.42beta"
 
 /* 
+This is the ARV_APM firmware. It was originally derived from APMrover2
+by Jed Smith (JMS), 28 May 2013. 
+
 This is the APMrover2 firmware. It was originally derived from
 ArduPlane by Jean-Louis Naudin (JLN), and then rewritten after the
 AP_HAL merge by Andrew Tridgell
@@ -23,8 +26,8 @@ version 2.1 of the License, or (at your option) any later version.
 // APM INPUT (Rec = receiver)
 // Rec ch1: Steering
 // Rec ch2: not used
-// Rec ch3: Throttle
-// Rec ch4: not used
+// Rec ch3: Throttle1
+// Rec ch4: Throttle2
 // Rec ch5: not used
 // Rec ch6: not used
 // Rec ch7: Option channel to 2 position switch
@@ -32,8 +35,8 @@ version 2.1 of the License, or (at your option) any later version.
 // APM OUTPUT
 // Ch1: Wheel servo (direction)
 // Ch2: not used
-// Ch3: to the motor ESC
-// Ch4: not used
+// Ch3: to the motor1 ESC
+// Ch4: to the motor2 ESC
 //
 */
 
