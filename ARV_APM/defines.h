@@ -44,6 +44,7 @@ enum ch7_option {
 
 #define CH_STEER    CH_1
 #define CH_THROTTLE CH_3
+#define CH_THROTTLE2 CH_4
 
 // HIL enumerations
 #define HIL_MODE_DISABLED			0

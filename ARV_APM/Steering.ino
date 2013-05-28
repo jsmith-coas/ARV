@@ -14,6 +14,7 @@ static void throttle_slew_limit(int16_t last_throttle)
             temp = 1;
         }
         g.channel_throttle.radio_out = constrain_int16(g.channel_throttle.radio_out, last_throttle - temp, last_throttle + temp);
+        g.channel_throttle2.radio_out = constrain_int16(g.channel_throttle2.radio_out, last_throttle - temp, last_throttle + temp);
     }
 }
 
@@ -72,11 +73,13 @@ static void calc_throttle(float target_speed)
 {  
     if (!auto_check_trigger()) {
         g.channel_throttle.servo_out = g.throttle_min.get();
+        g.channel_throttle2.servo_out = g.throttle_min.get();
         return;
     }
 
     if (target_speed <= 0) {
         // cope with zero requested speed
+        g.channel_throttle.servo_out = g.throttle_min.get();
         g.channel_throttle.servo_out = g.throttle_min.get();
         return;
     }
@@ -111,6 +114,7 @@ static void calc_throttle(float target_speed)
     throttle *= reduction;
 
     g.channel_throttle.servo_out = constrain_int16(throttle, g.throttle_min.get(), g.throttle_max.get());
+    g.channel_throttle2.servo_out = constrain_int16(throttle, g.throttle_min.get(), g.throttle_max.get());
 }
 
 /*****************************************
@@ -147,28 +151,34 @@ static void set_servos(void)
 {
     int16_t last_throttle = g.channel_throttle.radio_out;
 
-	if ((control_mode == MANUAL || control_mode == LEARNING) &&
-        (g.skid_steer_out == g.skid_steer_in)) {
-        // do a direct pass through of radio values
+	if ((control_mode == MANUAL || control_mode == LEARNING) && (g.skid_steer_out == g.skid_steer_in)) {
+  // do a direct pass through of radio values
         g.channel_steer.radio_out       = hal.rcin->read(CH_STEER);
         g.channel_throttle.radio_out    = hal.rcin->read(CH_THROTTLE);
+        g.channel_throttle2.radio_out   = hal.rcin->read(CH_THROTTLE2);
         if (failsafe.bits & FAILSAFE_EVENT_THROTTLE) {
             // suppress throttle if in failsafe and manual
             g.channel_throttle.radio_out = g.channel_throttle.radio_trim;
+            g.channel_throttle2.radio_out = g.channel_throttle2.radio_trim;
         }
 	} else {       
         g.channel_steer.calc_pwm();
 		g.channel_throttle.servo_out = constrain_int16(g.channel_throttle.servo_out, 
                                                        g.throttle_min.get(), 
                                                        g.throttle_max.get());
+ 		g.channel_throttle2.servo_out = constrain_int16(g.channel_throttle2.servo_out, 
+                                                       g.throttle_min.get(), 
+                                                       g.throttle_max.get());
 
         if ((failsafe.bits & FAILSAFE_EVENT_THROTTLE) && control_mode < AUTO) {
             // suppress throttle if in failsafe
             g.channel_throttle.servo_out = 0;
+            g.channel_throttle2.servo_out = 0;
         }
 
         // convert 0 to 100% into PWM
         g.channel_throttle.calc_pwm();
+        g.channel_throttle2.calc_pwm();
 
         // limit throttle movement speed
         throttle_slew_limit(last_throttle);
@@ -199,10 +209,10 @@ static void set_servos(void)
 	// ----------------------------------------
     hal.rcout->write(CH_1, g.channel_steer.radio_out);     // send to Servos
     hal.rcout->write(CH_3, g.channel_throttle.radio_out);     // send to Servos
+    hal.rcout->write(CH_4, g.channel_throttle2.radio_out);
 
 	// Route configurable aux. functions to their respective servos
 	g.rc_2.output_ch(CH_2);
-	g.rc_4.output_ch(CH_4);
 	g.rc_5.output_ch(CH_5);
 	g.rc_6.output_ch(CH_6);
 	g.rc_7.output_ch(CH_7);

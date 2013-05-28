@@ -79,7 +79,7 @@ public:
         k_param_channel_steer = 160,
         k_param_rc_2,
         k_param_channel_throttle,
-        k_param_rc_4,
+        k_param_channel_throttle2,
         k_param_rc_5,
         k_param_rc_6,
         k_param_rc_7,
@@ -190,7 +190,7 @@ public:
     RC_Channel      channel_steer;
     RC_Channel_aux	rc_2;
     RC_Channel      channel_throttle;
-    RC_Channel_aux  rc_4;
+    RC_Channel      channel_throttle2;
     RC_Channel_aux	rc_5;
     RC_Channel_aux	rc_6;
     RC_Channel_aux	rc_7;
@@ -246,7 +246,7 @@ public:
         channel_steer(CH_1),
         rc_2(CH_2),
         channel_throttle(CH_3),
-        rc_4(CH_4),
+        channel_throttle2(CH_4),
         rc_5(CH_5),
         rc_6(CH_6),
         rc_7(CH_7),

@@ -385,9 +385,6 @@ static void do_repeat_servo()
 			case CH_2:
 				event_undo_value = g.rc_2.radio_trim;
 				break;
-			case CH_4:
-				event_undo_value = g.rc_4.radio_trim;
-				break;
 			case CH_5:
 				event_undo_value = g.rc_5.radio_trim;
 				break;

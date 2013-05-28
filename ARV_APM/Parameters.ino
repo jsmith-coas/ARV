@@ -122,7 +122,6 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @DisplayName: Battery Capacity
     // @Description: Battery capacity in milliamp-hours (mAh)
     // @Units: mAh
-	// @User: Standard
 	GSCALAR(pack_capacity,          "BATT_CAPACITY",    HIGH_DISCHARGE),
 
     // @Param: XTRK_GAIN_SC
@@ -195,7 +194,7 @@ const AP_Param::Info var_info[] PROGMEM = {
 	GGROUP(channel_steer,           "RC1_", RC_Channel),
 	GGROUP(rc_2,                    "RC2_", RC_Channel_aux),
 	GGROUP(channel_throttle,        "RC3_", RC_Channel),
-	GGROUP(rc_4,                    "RC4_", RC_Channel_aux),
+	GGROUP(channel_throttle2,       "RC4_", RC_Channel),
 	GGROUP(rc_5,                    "RC5_", RC_Channel_aux),
 	GGROUP(rc_6,                    "RC6_", RC_Channel_aux),
 	GGROUP(rc_7,                    "RC7_", RC_Channel_aux),

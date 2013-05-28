@@ -235,8 +235,8 @@ setup_radio(uint8_t argc, const Menu::arg *argv)
 
 	g.channel_steer.radio_min 		= g.channel_steer.radio_in;
 	g.channel_throttle.radio_min 	= g.channel_throttle.radio_in;
+        g.channel_throttle2.radio_min   = g.channel_throttle2.radio_in;
 	g.rc_2.radio_min = g.rc_2.radio_in;
-	g.rc_4.radio_min = g.rc_4.radio_in;
 	g.rc_5.radio_min = g.rc_5.radio_in;
 	g.rc_6.radio_min = g.rc_6.radio_in;
 	g.rc_7.radio_min = g.rc_7.radio_in;
@@ -244,8 +244,8 @@ setup_radio(uint8_t argc, const Menu::arg *argv)
 
 	g.channel_steer.radio_max 		= g.channel_steer.radio_in;
 	g.channel_throttle.radio_max 	= g.channel_throttle.radio_in;
+        g.channel_throttle2.radio_max   = g.channel_throttle2.radio_in;
 	g.rc_2.radio_max = g.rc_2.radio_in;
-	g.rc_4.radio_max = g.rc_4.radio_in;
 	g.rc_5.radio_max = g.rc_5.radio_in;
 	g.rc_6.radio_max = g.rc_6.radio_in;
 	g.rc_7.radio_max = g.rc_7.radio_in;
@@ -253,7 +253,6 @@ setup_radio(uint8_t argc, const Menu::arg *argv)
 
 	g.channel_steer.radio_trim 		= g.channel_steer.radio_in;
 	g.rc_2.radio_trim = 1500;
-	g.rc_4.radio_trim = 1500;
 	g.rc_5.radio_trim = 1500;
 	g.rc_6.radio_trim = 1500;
 	g.rc_7.radio_trim = 1500;
@@ -269,8 +268,8 @@ setup_radio(uint8_t argc, const Menu::arg *argv)
 
 		g.channel_steer.update_min_max();
 		g.channel_throttle.update_min_max();
+                g.channel_throttle2.update_min_max();
 		g.rc_2.update_min_max();
-		g.rc_4.update_min_max();
 		g.rc_5.update_min_max();
 		g.rc_6.update_min_max();
 		g.rc_7.update_min_max();
@@ -282,8 +281,8 @@ setup_radio(uint8_t argc, const Menu::arg *argv)
             }
 			g.channel_steer.save_eeprom();
 			g.channel_throttle.save_eeprom();
+                        g.channel_throttle2.save_eeprom();
 			g.rc_2.save_eeprom();
-			g.rc_4.save_eeprom();
 			g.rc_5.save_eeprom();
 			g.rc_6.save_eeprom();
 			g.rc_7.save_eeprom();
@@ -621,7 +620,7 @@ print_radio_values()
 	cliSerial->printf_P(PSTR("CH1: %d | %d | %d\n"), (int)g.channel_steer.radio_min, (int)g.channel_steer.radio_trim, (int)g.channel_steer.radio_max);
 	cliSerial->printf_P(PSTR("CH2: %d | %d | %d\n"), (int)g.rc_2.radio_min, (int)g.rc_2.radio_trim, (int)g.rc_2.radio_max);
 	cliSerial->printf_P(PSTR("CH3: %d | %d | %d\n"), (int)g.channel_throttle.radio_min, (int)g.channel_throttle.radio_trim, (int)g.channel_throttle.radio_max);
-	cliSerial->printf_P(PSTR("CH4: %d | %d | %d\n"), (int)g.rc_4.radio_min, (int)g.rc_4.radio_trim, (int)g.rc_4.radio_max);
+	cliSerial->printf_P(PSTR("CH4: %d | %d | %d\n"), (int)g.channel_throttle2.radio_min, (int)g.channel_throttle2.radio_trim, (int)g.channel_throttle2.radio_max);
 	cliSerial->printf_P(PSTR("CH5: %d | %d | %d\n"), (int)g.rc_5.radio_min, (int)g.rc_5.radio_trim, (int)g.rc_5.radio_max);
 	cliSerial->printf_P(PSTR("CH6: %d | %d | %d\n"), (int)g.rc_6.radio_min, (int)g.rc_6.radio_trim, (int)g.rc_6.radio_max);
 	cliSerial->printf_P(PSTR("CH7: %d | %d | %d\n"), (int)g.rc_7.radio_min, (int)g.rc_7.radio_trim, (int)g.rc_7.radio_max);
