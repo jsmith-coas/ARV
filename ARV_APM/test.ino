@@ -149,6 +149,7 @@ test_radio(uint8_t argc, const Menu::arg *argv)
 
 		g.channel_steer.calc_pwm();
 		g.channel_throttle.calc_pwm();
+		g.channel_throttle2.calc_pwm();
 
 		// write out the servo PWM values
 		// ------------------------------

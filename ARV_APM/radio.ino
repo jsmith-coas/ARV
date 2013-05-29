@@ -5,10 +5,12 @@ static void init_rc_in()
 	// set rc channel ranges
 	g.channel_steer.set_angle(SERVO_MAX);
 	g.channel_throttle.set_angle(100);
+	g.channel_throttle2.set_angle(100);
 
 	// set rc dead zones
 	g.channel_steer.set_dead_zone(60);
 	g.channel_throttle.set_dead_zone(6);
+	g.channel_throttle2.set_dead_zone(6);
 
 	//set auxiliary ranges
     update_aux_servo_function(&g.rc_2, &g.rc_5, &g.rc_6, &g.rc_7, &g.rc_8);
@@ -65,6 +67,7 @@ static void read_radio()
 	control_failsafe(g.channel_throttle.radio_in);
 
 	g.channel_throttle.servo_out = g.channel_throttle.control_in;
+	g.channel_throttle2.servo_out = g.channel_throttle2.control_in;
 
 	if (g.channel_throttle.servo_out > 50) {
         throttle_nudge = (g.throttle_max - g.throttle_cruise) * ((g.channel_throttle.norm_input()-0.5) / 0.5);

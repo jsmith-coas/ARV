@@ -80,7 +80,7 @@ static void calc_throttle(float target_speed)
     if (target_speed <= 0) {
         // cope with zero requested speed
         g.channel_throttle.servo_out = g.throttle_min.get();
-        g.channel_throttle.servo_out = g.throttle_min.get();
+        g.channel_throttle2.servo_out = g.throttle_min.get();
         return;
     }
 
@@ -166,7 +166,7 @@ static void set_servos(void)
 		g.channel_throttle.servo_out = constrain_int16(g.channel_throttle.servo_out, 
                                                        g.throttle_min.get(), 
                                                        g.throttle_max.get());
- 		g.channel_throttle2.servo_out = constrain_int16(g.channel_throttle2.servo_out, 
+ 		g.channel_throttle2.servo_out = constrain_int16(g.channel_throttle.servo_out, 
                                                        g.throttle_min.get(), 
                                                        g.throttle_max.get());
 

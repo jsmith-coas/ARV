@@ -278,7 +278,7 @@ static void NOINLINE send_servo_out(mavlink_channel_t chan)
         10000 * g.channel_steer.norm_output(),
         0,
         10000 * g.channel_throttle.norm_output(),
-        0,
+        10000 * g.channel_throttle2.norm_output(),
         0,
         0,
         0,

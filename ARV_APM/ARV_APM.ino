@@ -1,6 +1,7 @@
 /// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #define THISFIRMWARE "ArduRover v2.42beta"
+//Note: difference between 2.41 and 2.42beta is addition to line 814 of have_position = ahrs.get_projected_position(&current_loc); instead of have_position = ahrs.get_position(&current_loc);
 
 /* 
 This is the ARV_APM firmware. It was originally derived from APMrover2
@@ -24,19 +25,19 @@ version 2.1 of the License, or (at your option) any later version.
 
 // Radio setup:
 // APM INPUT (Rec = receiver)
-// Rec ch1: Steering
+// Rec ch1: Rudder steering
 // Rec ch2: not used
-// Rec ch3: Throttle1
-// Rec ch4: Throttle2
+// Rec ch3: Throttle1 (PORT)
+// Rec ch4: Throttle2 (STBD)
 // Rec ch5: not used
 // Rec ch6: not used
 // Rec ch7: Option channel to 2 position switch
 // Rec ch8: Mode channel to 6 position switch
 // APM OUTPUT
-// Ch1: Wheel servo (direction)
+// Ch1: Rudder servo (direction)
 // Ch2: not used
-// Ch3: to the motor1 ESC
-// Ch4: to the motor2 ESC
+// Ch3: to the motor1 ESC (PORT)
+// Ch4: to the motor2 ESC (STBD)
 //
 */
 
@@ -269,10 +270,10 @@ static bool usb_connected;
 
 /* Radio values
 		Channel assignments
-			1   Steering
+			1   Rudder steering
 			2   ---
-			3   Throttle
-			4   ---
+			3   Throttle 1
+			4   Throttle 2
 			5   Aux5
 			6   Aux6
 			7   Aux7
@@ -861,6 +862,7 @@ static void update_current_mode(void)
         /* we need to reset the I term or it will build up */
         g.pidNavSteer.reset_I();
         calc_throttle(g.channel_throttle.pwm_to_angle() * 0.01 * g.speed_cruise);
+        calc_throttle(g.channel_throttle2.pwm_to_angle() * 0.01 * g.speed_cruise);        
         break;
 
     case LEARNING:
@@ -872,12 +874,14 @@ static void update_current_mode(void)
           logging
          */
         g.channel_throttle.servo_out = g.channel_throttle.control_in;
+        g.channel_throttle2.servo_out = g.channel_throttle2.control_in;
         g.channel_steer.servo_out = g.channel_steer.pwm_to_angle();
         break;
 
     case HOLD:
         // hold position - stop motors and center steering
         g.channel_throttle.servo_out = 0;
+        g.channel_throttle2.servo_out=0;
         g.channel_steer.servo_out = 0;
         break;
 
@@ -907,6 +911,7 @@ static void update_navigation()
         calc_bearing_error();
         if (verify_RTL()) {  
             g.channel_throttle.servo_out = g.throttle_min.get();
+            g.channel_throttle2.servo_out = g.throttle_min.get();
             set_mode(HOLD);
         }
         break;
