@@ -77,11 +77,11 @@ public:
         // 160: Radio settings
         //
         k_param_channel_steer = 160,
-        k_param_rc_2,
+        k_param_channel_winch_motor,
         k_param_channel_throttle,
         k_param_channel_throttle2,
         k_param_rc_5,
-        k_param_rc_6,
+        k_param_channel_winch_clutch,
         k_param_rc_7,
         k_param_rc_8,
 
@@ -127,6 +127,14 @@ public:
         k_param_command_total = 220,
         k_param_command_index,
         k_param_waypoint_radius,
+        
+        //---------- Added for Winch Controll ---------- JMS June 2013 ----------//
+
+        // 230: Winch Controllers
+        k_param_w_motor_sample,
+        k_param_w_motor_slow,
+        
+        //---------- END Added ----------//        
 
         //
         // 240: PID Controllers
@@ -143,7 +151,7 @@ public:
         // 254,255: reserved
         };
 
-    AP_Int16    format_version;
+        AP_Int16    format_version;
 	AP_Int8	    software_type;
 
     // Misc
@@ -182,19 +190,19 @@ public:
     AP_Float    speed_cruise;
     AP_Int8     speed_turn_gain;
     AP_Float    speed_turn_dist;    
-    AP_Int8	    ch7_option;
+    AP_Int8	ch7_option;
     AP_Int8     auto_trigger_pin;
     AP_Float    auto_kickstart;
 
     // RC channels
     RC_Channel      channel_steer;
-    RC_Channel_aux	rc_2;
+    RC_Channel_aux  channel_winch_motor;
     RC_Channel      channel_throttle;
     RC_Channel      channel_throttle2;
-    RC_Channel_aux	rc_5;
-    RC_Channel_aux	rc_6;
-    RC_Channel_aux	rc_7;
-    RC_Channel_aux	rc_8;
+    RC_Channel_aux  rc_5;
+    RC_Channel_aux  channel_winch_clutch;
+    RC_Channel_aux  rc_7;
+    RC_Channel_aux  rc_8;
 
     // Throttle
     //
@@ -240,15 +248,23 @@ public:
     PID         pidNavSteer;
     PID         pidServoSteer;
     PID         pidSpeedThrottle;
+    
+        //---------- Added for Winch Controll ---------- JMS June 2013 ----------//
+        
+    // Winch controllers
+    AP_Int8    w_motor_sample;
+    AP_Int8    w_motor_slow;
+    
+        //---------- END Added ----------//    
 
     Parameters() :
         // RC channels
         channel_steer(CH_1),
-        rc_2(CH_2),
+        channel_winch_motor(CH_2),
         channel_throttle(CH_3),
         channel_throttle2(CH_4),
         rc_5(CH_5),
-        rc_6(CH_6),
+        channel_winch_clutch(CH_6),
         rc_7(CH_7),
         rc_8(CH_8),
 

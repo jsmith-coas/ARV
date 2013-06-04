@@ -192,11 +192,11 @@ const AP_Param::Info var_info[] PROGMEM = {
 	GSCALAR(ch7_option,             "CH7_OPTION",          CH7_OPTION),
 
 	GGROUP(channel_steer,           "RC1_", RC_Channel),
-	GGROUP(rc_2,                    "RC2_", RC_Channel_aux),
+	GGROUP(channel_winch_motor,     "RC2_", RC_Channel_aux),
 	GGROUP(channel_throttle,        "RC3_", RC_Channel),
 	GGROUP(channel_throttle2,       "RC4_", RC_Channel),
 	GGROUP(rc_5,                    "RC5_", RC_Channel_aux),
-	GGROUP(rc_6,                    "RC6_", RC_Channel_aux),
+	GGROUP(channel_winch_clutch,    "RC6_", RC_Channel_aux),
 	GGROUP(rc_7,                    "RC7_", RC_Channel_aux),
 	GGROUP(rc_8,                    "RC8_", RC_Channel_aux),
 
@@ -395,6 +395,27 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Group: SONAR2_
     // @Path: ../libraries/AP_RangeFinder/AP_RangeFinder_analog.cpp
     GOBJECT(sonar2,                 "SONAR2_", AP_RangeFinder_analog),
+    
+        //---------- Added for Winch Controll ---------- JMS June 2013 ----------//
+
+    // @Param: Winch_Sample
+    // @DisplayName: Winch sampling motor speed
+    // @Description: RC servo speed to controll winch motor controller for sampling (CTD => 1m/s)
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Standard    
+  	GSCALAR(w_motor_sample,        "WINCH_SAMPLE",        40),
+  
+    // @Param: Winch_Slow
+    // @DisplayName: Winch slow motor speed
+    // @Description: RC servo speed to controll winch motor controller for retracting A-frame
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Standard 	
+        GSCALAR(w_motor_slow,          "WINCH_SLOW",          5),
+
+        //---------- END Added ----------//
+
 
 #if HIL_MODE == HIL_MODE_DISABLED
     // @Group: INS_

@@ -147,61 +147,61 @@ static void calc_nav_steer()
 /*****************************************
 * Set the flight control servos based on the current calculated values
 *****************************************/
-static void set_servos(void)
-{
-    int16_t last_throttle = g.channel_throttle.radio_out;
+static void set_servos(void) {
+  int16_t last_throttle = g.channel_throttle.radio_out;
 
-	if ((control_mode == MANUAL || control_mode == LEARNING) && (g.skid_steer_out == g.skid_steer_in)) {
-  // do a direct pass through of radio values
-        g.channel_steer.radio_out       = hal.rcin->read(CH_STEER);
-        g.channel_throttle.radio_out    = hal.rcin->read(CH_THROTTLE);
-        g.channel_throttle2.radio_out   = hal.rcin->read(CH_THROTTLE2);
-        if (failsafe.bits & FAILSAFE_EVENT_THROTTLE) {
-            // suppress throttle if in failsafe and manual
-            g.channel_throttle.radio_out = g.channel_throttle.radio_trim;
-            g.channel_throttle2.radio_out = g.channel_throttle2.radio_trim;
-        }
+  if ((control_mode == MANUAL || control_mode == LEARNING) && (g.skid_steer_out == g.skid_steer_in)) {
+    // do a direct pass through of radio values
+    g.channel_steer.radio_out       = hal.rcin->read(CH_STEER);
+    g.channel_throttle.radio_out    = hal.rcin->read(CH_THROTTLE);
+    g.channel_throttle2.radio_out   = hal.rcin->read(CH_THROTTLE2);    
+  
+    if (failsafe.bits & FAILSAFE_EVENT_THROTTLE) {
+        // suppress throttle if in failsafe and manual
+        g.channel_throttle.radio_out = g.channel_throttle.radio_trim;
+        g.channel_throttle2.radio_out = g.channel_throttle2.radio_trim;
+    }        
 	} else {       
-        g.channel_steer.calc_pwm();
+    g.channel_steer.calc_pwm();
 		g.channel_throttle.servo_out = constrain_int16(g.channel_throttle.servo_out, 
-                                                       g.throttle_min.get(), 
-                                                       g.throttle_max.get());
+                                                 g.throttle_min.get(), 
+                                                 g.throttle_max.get());
  		g.channel_throttle2.servo_out = constrain_int16(g.channel_throttle.servo_out, 
-                                                       g.throttle_min.get(), 
-                                                       g.throttle_max.get());
+                                                 g.throttle_min.get(), 
+                                                 g.throttle_max.get());                                                       
 
-        if ((failsafe.bits & FAILSAFE_EVENT_THROTTLE) && control_mode < AUTO) {
-            // suppress throttle if in failsafe
-            g.channel_throttle.servo_out = 0;
-            g.channel_throttle2.servo_out = 0;
-        }
-
-        // convert 0 to 100% into PWM
-        g.channel_throttle.calc_pwm();
-        g.channel_throttle2.calc_pwm();
-
-        // limit throttle movement speed
-        throttle_slew_limit(last_throttle);
-
-        if (g.skid_steer_out) {
-            // convert the two radio_out values to skid steering values
-            /*
-              mixing rule:
-              steering = motor1 - motor2
-              throttle = 0.5*(motor1 + motor2)
-              motor1 = throttle + 0.5*steering
-              motor2 = throttle - 0.5*steering
-            */          
-            float steering_scaled = g.channel_steer.norm_output();
-            float throttle_scaled = g.channel_throttle.norm_output();
-            float motor1 = throttle_scaled + 0.5*steering_scaled;
-            float motor2 = throttle_scaled - 0.5*steering_scaled;
-            g.channel_steer.servo_out = 4500*motor1;
-            g.channel_throttle.servo_out = 100*motor2;
-            g.channel_steer.calc_pwm();
-            g.channel_throttle.calc_pwm();
-        }
+    if ((failsafe.bits & FAILSAFE_EVENT_THROTTLE) && control_mode < AUTO) {
+        // suppress throttle if in failsafe
+        g.channel_throttle.servo_out = 0;
+        g.channel_throttle2.servo_out = 0;
     }
+
+    // convert 0 to 100% into PWM
+    g.channel_throttle.calc_pwm();
+    g.channel_throttle2.calc_pwm();
+
+    // limit throttle movement speed
+    throttle_slew_limit(last_throttle);
+
+    if (g.skid_steer_out) {
+        // convert the two radio_out values to skid steering values
+        /*
+          mixing rule:
+          steering = motor1 - motor2
+          throttle = 0.5*(motor1 + motor2)
+          motor1 = throttle + 0.5*steering
+          motor2 = throttle - 0.5*steering
+        */          
+        float steering_scaled = g.channel_steer.norm_output();
+        float throttle_scaled = g.channel_throttle.norm_output();
+        float motor1 = throttle_scaled + 0.5*steering_scaled;
+        float motor2 = throttle_scaled - 0.5*steering_scaled;
+        g.channel_steer.servo_out = 4500*motor1;
+        g.channel_throttle.servo_out = 100*motor2;
+        g.channel_steer.calc_pwm();
+        g.channel_throttle.calc_pwm();
+    }
+  }
 
 
 #if HIL_MODE == HIL_MODE_DISABLED || HIL_SERVOS
@@ -212,9 +212,9 @@ static void set_servos(void)
     hal.rcout->write(CH_4, g.channel_throttle2.radio_out);
 
 	// Route configurable aux. functions to their respective servos
-	g.rc_2.output_ch(CH_2);
+	g.channel_winch_motor.output_ch(CH_2);
+	g.channel_winch_clutch.output_ch(CH_6);
 	g.rc_5.output_ch(CH_5);
-	g.rc_6.output_ch(CH_6);
 	g.rc_7.output_ch(CH_7);
 	g.rc_8.output_ch(CH_8);
 

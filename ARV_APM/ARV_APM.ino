@@ -26,18 +26,22 @@ version 2.1 of the License, or (at your option) any later version.
 // Radio setup:
 // APM INPUT (Rec = receiver)
 // Rec ch1: Rudder steering
-// Rec ch2: not used
+// Rec ch2: Winch motor controll
 // Rec ch3: Throttle1 (PORT)
 // Rec ch4: Throttle2 (STBD)
 // Rec ch5: not used
-// Rec ch6: not used
+// Rec ch6: Winch clutch servo controll
 // Rec ch7: Option channel to 2 position switch
 // Rec ch8: Mode channel to 6 position switch
 // APM OUTPUT
 // Ch1: Rudder servo (direction)
-// Ch2: not used
+// Ch2: Winch motor ESC
 // Ch3: to the motor1 ESC (PORT)
 // Ch4: to the motor2 ESC (STBD)
+// Ch5: not used
+// Ch6: Winch clutch servo
+// Ch7: not used
+// Ch8: not used
 //
 */
 
@@ -271,11 +275,11 @@ static bool usb_connected;
 /* Radio values
 		Channel assignments
 			1   Rudder steering
-			2   ---
+			2   Winch motor
 			3   Throttle 1
 			4   Throttle 2
 			5   Aux5
-			6   Aux6
+			6   Winch clutch
 			7   Aux7
 			8   Aux8/Mode
 		Each Aux channel can be configured to have any of the available auxiliary functions assigned to it.
@@ -771,7 +775,7 @@ static void slow_loop()
 			// -------------------------------
 			read_control_switch();
 
-			update_aux_servo_function(&g.rc_2, &g.rc_5, &g.rc_6, &g.rc_7, &g.rc_8);
+			update_aux_servo_function(&g.channel_winch_motor, &g.rc_5, &g.channel_winch_clutch, &g.rc_7, &g.rc_8);
 
 #if MOUNT == ENABLED
 			camera_mount.update_mount_type();

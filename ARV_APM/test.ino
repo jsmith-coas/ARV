@@ -92,11 +92,11 @@ test_radio_pwm(uint8_t argc, const Menu::arg *argv)
 
 		cliSerial->printf_P(PSTR("IN:\t1: %d\t2: %d\t3: %d\t4: %d\t5: %d\t6: %d\t7: %d\t8: %d\n"),
 							g.channel_steer.radio_in,
-							g.rc_2.radio_in,
+							g.channel_winch_motor.radio_in,
 							g.channel_throttle.radio_in,
 							g.channel_throttle2.radio_in,
 							g.rc_5.radio_in,
-							g.rc_6.radio_in,
+							g.channel_winch_clutch.radio_in,
 							g.rc_7.radio_in,
 							g.rc_8.radio_in);
 
@@ -159,11 +159,11 @@ test_radio(uint8_t argc, const Menu::arg *argv)
                 
 		cliSerial->printf_P(PSTR("IN 1: %d\t2: %d\t3: %d\t4: %d\t5: %d\t6: %d\t7: %d\t8: %d  Tuning = %2.3f\n"),
 							g.channel_steer.control_in,
-							g.rc_2.control_in,
+							g.channel_winch_motor.control_in,
 							g.channel_throttle.control_in,
 							g.channel_throttle2.control_in,
 							g.rc_5.control_in,
-							g.rc_6.control_in,
+							g.channel_winch_clutch.control_in,
 							g.rc_7.control_in,
 							g.rc_8.control_in,
                                                         tuning_value);

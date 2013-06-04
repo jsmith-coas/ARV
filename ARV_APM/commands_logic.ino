@@ -383,13 +383,13 @@ static void do_repeat_servo()
 
 		switch(next_nonnav_command.p1) {
 			case CH_2:
-				event_undo_value = g.rc_2.radio_trim;
+				event_undo_value = g.channel_winch_motor.radio_trim;
 				break;
 			case CH_5:
 				event_undo_value = g.rc_5.radio_trim;
 				break;
 			case CH_6:
-				event_undo_value = g.rc_6.radio_trim;
+				event_undo_value = g.channel_winch_clutch.radio_trim;
 				break;
 			case CH_7:
 				event_undo_value = g.rc_7.radio_trim;
