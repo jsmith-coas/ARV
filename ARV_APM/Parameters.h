@@ -255,8 +255,8 @@ public:
         //---------- Added for Winch Controll ---------- JMS June 2013 ----------//
         
     // Winch controllers
-    AP_Int8    w_motor_sample;
-    AP_Int8    w_motor_slow;
+    AP_Int16   w_motor_sample;
+    AP_Int16   w_motor_slow;
     AP_Int8    aframe_debounce;
     AP_Int8    aframe_aft_pin;
     AP_Int8    aframe_for_pin;

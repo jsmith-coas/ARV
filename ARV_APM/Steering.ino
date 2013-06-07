@@ -155,14 +155,21 @@ static void set_servos(void) {
     g.channel_steer.radio_out          = hal.rcin->read(CH_STEER);
     g.channel_throttle.radio_out       = hal.rcin->read(CH_THROTTLE);
     g.channel_throttle2.radio_out      = hal.rcin->read(CH_THROTTLE2);
-    if (control_mode == MANUAL) {                                                  // Manual winch control is enabled only in MANUAL mode
-        if (aframe.for_sensor_state == 1) {                                        // Disable the motor when the Aframe is all the way forward
+    if (control_mode == MANUAL) {                                                             // Manual winch control is enabled only in MANUAL mode
+        if (aframe.for_sensor_state == 0) {                                                // --Aframe is retracted
             //NOTE: sensor_state is HIGH when open, LOW when closed (pulls to ground)
-            g.channel_winch_motor.radio_out = hal.rcin->read(CH_WINCH_MOTOR);
-        } else {
-            g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;    // turn off the winch's motor       
-        }     
-        g.channel_winch_clutch.radio_out   = hal.rcin->read(CH_WINCH_CLUTCH);
+            g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;               // Disable the winch motor       
+        } else if (aframe.aft_sensor_state == 1) {                                         // --Aframe is retracting
+            g.channel_winch_motor.radio_out = constrain_int16(hal.rcin->read(CH_WINCH_MOTOR), // Limit winch motor to slow speed
+                                                              g.channel_winch_motor.radio_trim, 
+                                                              g.w_motor_slow);
+        } else {                                                                           // --Aframe is extended
+            g.channel_winch_motor.radio_out = constrain_int16(hal.rcin->read(CH_WINCH_MOTOR), // Limit winch motor to high speed
+                                                              g.channel_winch_motor.radio_trim, 
+                                                              g.channel_winch_motor.radio_max);
+        }
+        
+        g.channel_winch_clutch.radio_out   = hal.rcin->read(CH_WINCH_CLUTCH);                 // Pass winch servo commands through
     }
     
   

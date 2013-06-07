@@ -397,22 +397,22 @@ const AP_Param::Info var_info[] PROGMEM = {
     GOBJECT(sonar2,               "SONAR2_",      AP_RangeFinder_analog),
     
         //---------- Added for Winch Controll ---------- JMS June 2013 ----------//
-
+  
     // @Param: WINCH_SAMPLE
     // @DisplayName: Winch sampling motor speed
-    // @Description: RC servo speed to controll winch motor controller for sampling (CTD => 1m/s)
-    // @Range: 0 100
+    // @Description: RC servo PWM level to controll winch motor controller for sampling (CTD ~= 1m/s)
+    // @Range: 0 2000 ms
     // @Increment: 1
     // @User: Standard    
-  	GSCALAR(w_motor_sample,   "WINCH_SAMPLE",     40),
+  	GSCALAR(w_motor_sample,   "WINCH_SAMPLE",     1680),
   
     // @Param: WINCH_SLOW
     // @DisplayName: Winch slow motor speed
-    // @Description: RC servo speed to controll winch motor controller for retracting A-frame
-    // @Range: 0 100
+    // @Description: RC servo PWM level to controll winch motor controller for retracting A-frame
+    // @Range: 0 2000 ms
     // @Increment: 1
     // @User: Standard 	
-        GSCALAR(w_motor_slow,      "WINCH_SLOW",      5),
+        GSCALAR(w_motor_slow,      "WINCH_SLOW",      1540),
         
     // @Param: AFRAME_DEBOUNCE
     // @DisplayName: A-frame debounce count
