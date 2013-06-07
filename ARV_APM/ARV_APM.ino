@@ -397,6 +397,19 @@ static struct {
 static bool auto_triggered;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Aframe and Winch for the ARV - JMS
+////////////////////////////////////////////////////////////////////////////////
+
+static struct {
+    // have we moved the aframe?
+    bool aft_sensor_state;
+    uint8_t aft_sensor_count;
+    bool for_sensor_state;
+    uint8_t for_sensor_count;
+    uint32_t detected_time_ms;
+} aframe;
+
+////////////////////////////////////////////////////////////////////////////////
 // Ground speed
 ////////////////////////////////////////////////////////////////////////////////
 // The amount current ground speed is below min ground speed.  meters per second
@@ -574,7 +587,7 @@ void loop()
     // We want this to execute at 50Hz, but synchronised with the gyro/accel
     uint16_t num_samples = ins.num_samples_available();
     if (num_samples >= 1) {
-		delta_ms_fast_loop	= millis() - fast_loopTimer;
+		delta_ms_fast_loop  = millis() - fast_loopTimer;
 		load                = (float)(fast_loopTimeStamp - fast_loopTimer)/delta_ms_fast_loop;
 		G_Dt                = (float)delta_ms_fast_loop / 1000.f;
 		fast_loopTimer      = millis();
@@ -642,6 +655,7 @@ static void fast_loop()
 	ahrs.update();
 
     read_sonars();
+    read_aframe();
 
 	// uses the yaw from the DCM to give more accurate turns
 	calc_bearing_error();
@@ -775,7 +789,7 @@ static void slow_loop()
 			// -------------------------------
 			read_control_switch();
 
-			update_aux_servo_function(&g.channel_winch_motor, &g.rc_5, &g.channel_winch_clutch, &g.rc_7, &g.rc_8);
+			update_aux_servo_function(&g.rc_5, &g.rc_7, &g.rc_8);
 
 #if MOUNT == ENABLED
 			camera_mount.update_mount_type();

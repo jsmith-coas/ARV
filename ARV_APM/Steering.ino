@@ -152,28 +152,45 @@ static void set_servos(void) {
 
   if ((control_mode == MANUAL || control_mode == LEARNING) && (g.skid_steer_out == g.skid_steer_in)) {
     // do a direct pass through of radio values
-    g.channel_steer.radio_out       = hal.rcin->read(CH_STEER);
-    g.channel_throttle.radio_out    = hal.rcin->read(CH_THROTTLE);
-    g.channel_throttle2.radio_out   = hal.rcin->read(CH_THROTTLE2);    
+    g.channel_steer.radio_out          = hal.rcin->read(CH_STEER);
+    g.channel_throttle.radio_out       = hal.rcin->read(CH_THROTTLE);
+    g.channel_throttle2.radio_out      = hal.rcin->read(CH_THROTTLE2);
+    if (control_mode == MANUAL) {                                                  // Manual winch control is enabled only in MANUAL mode
+        if (aframe.for_sensor_state == 1) {                                        // Disable the motor when the Aframe is all the way forward
+            //NOTE: sensor_state is HIGH when open, LOW when closed (pulls to ground)
+            g.channel_winch_motor.radio_out = hal.rcin->read(CH_WINCH_MOTOR);
+        } else {
+            g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;    // turn off the winch's motor       
+        }     
+        g.channel_winch_clutch.radio_out   = hal.rcin->read(CH_WINCH_CLUTCH);
+    }
+    
   
     if (failsafe.bits & FAILSAFE_EVENT_THROTTLE) {
         // suppress throttle if in failsafe and manual
         g.channel_throttle.radio_out = g.channel_throttle.radio_trim;
         g.channel_throttle2.radio_out = g.channel_throttle2.radio_trim;
+        g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;      // turn off the winch's motor
+        g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;     // engage the winch clutch
     }        
-	} else {       
-    g.channel_steer.calc_pwm();
-		g.channel_throttle.servo_out = constrain_int16(g.channel_throttle.servo_out, 
-                                                 g.throttle_min.get(), 
-                                                 g.throttle_max.get());
- 		g.channel_throttle2.servo_out = constrain_int16(g.channel_throttle.servo_out, 
-                                                 g.throttle_min.get(), 
-                                                 g.throttle_max.get());                                                       
+  } else {       
+    g.channel_steer.calc_pwm();                  
+    g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;      // turn off the winch's motor
+    g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;     // engage the winch clutch
+    
 
     if ((failsafe.bits & FAILSAFE_EVENT_THROTTLE) && control_mode < AUTO) {
         // suppress throttle if in failsafe
         g.channel_throttle.servo_out = 0;
         g.channel_throttle2.servo_out = 0;
+    } else {
+        // JMS moved this into else from above to simplify code
+        g.channel_throttle.servo_out = constrain_int16(g.channel_throttle.servo_out, 
+                                                       g.throttle_min.get(), 
+                                                       g.throttle_max.get());
+        g.channel_throttle2.servo_out = constrain_int16(g.channel_throttle.servo_out, 
+                                                       g.throttle_min.get(), 
+                                                       g.throttle_max.get());  
     }
 
     // convert 0 to 100% into PWM
@@ -207,16 +224,17 @@ static void set_servos(void) {
 #if HIL_MODE == HIL_MODE_DISABLED || HIL_SERVOS
 	// send values to the PWM timers for output
 	// ----------------------------------------
-    hal.rcout->write(CH_1, g.channel_steer.radio_out);     // send to Servos
+    hal.rcout->write(CH_1, g.channel_steer.radio_out);        // send to Servos
     hal.rcout->write(CH_3, g.channel_throttle.radio_out);     // send to Servos
-    hal.rcout->write(CH_4, g.channel_throttle2.radio_out);
+    hal.rcout->write(CH_4, g.channel_throttle2.radio_out);    // send to Servos
 
-	// Route configurable aux. functions to their respective servos
-	g.channel_winch_motor.output_ch(CH_2);
-	g.channel_winch_clutch.output_ch(CH_6);
-	g.rc_5.output_ch(CH_5);
-	g.rc_7.output_ch(CH_7);
-	g.rc_8.output_ch(CH_8);
+    hal.rcout->write(CH_2, g.channel_winch_motor.radio_out);
+    hal.rcout->write(CH_6, g.channel_winch_clutch.radio_out);
+
+      // Route configurable aux. functions to their respective servos
+    g.rc_5.output_ch(CH_5);
+    g.rc_7.output_ch(CH_7);
+    g.rc_8.output_ch(CH_8);
 
 #endif
 }

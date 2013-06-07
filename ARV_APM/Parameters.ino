@@ -192,11 +192,11 @@ const AP_Param::Info var_info[] PROGMEM = {
 	GSCALAR(ch7_option,             "CH7_OPTION",          CH7_OPTION),
 
 	GGROUP(channel_steer,           "RC1_", RC_Channel),
-	GGROUP(channel_winch_motor,     "RC2_", RC_Channel_aux),
+	GGROUP(channel_winch_motor,     "RC2_", RC_Channel),
 	GGROUP(channel_throttle,        "RC3_", RC_Channel),
 	GGROUP(channel_throttle2,       "RC4_", RC_Channel),
 	GGROUP(rc_5,                    "RC5_", RC_Channel_aux),
-	GGROUP(channel_winch_clutch,    "RC6_", RC_Channel_aux),
+	GGROUP(channel_winch_clutch,    "RC6_", RC_Channel),
 	GGROUP(rc_7,                    "RC7_", RC_Channel_aux),
 	GGROUP(rc_8,                    "RC8_", RC_Channel_aux),
 
@@ -309,7 +309,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 100
     // @Increment: 0.1
 	// @User: Standard
-	GSCALAR(sonar_turn_time,    "SONAR_TURN_TIME",     1.0f),
+	GSCALAR(sonar_turn_time, "SONAR_TURN_TIME", 1.0f),
 
 	// @Param: SONAR_DEBOUNCE
 	// @DisplayName: Sonar debounce count
@@ -317,7 +317,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 1 100
     // @Increment: 1
 	// @User: Standard
-	GSCALAR(sonar_debounce,   "SONAR_DEBOUNCE",    2),
+	GSCALAR(sonar_debounce, "SONAR_DEBOUNCE", 2),
 
     // @Param: MODE_CH
     // @DisplayName: Mode channel
@@ -367,8 +367,8 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @User: Standard
 	GSCALAR(mode6,           "MODE6",         MODE_6),
 
-	GSCALAR(command_total,          "CMD_TOTAL",        0),
-	GSCALAR(command_index,          "CMD_INDEX",        0),
+	GSCALAR(command_total,   "CMD_TOTAL",     0),
+	GSCALAR(command_index,   "CMD_INDEX",     0),
 
     // @Param: WP_RADIUS
     // @DisplayName: Waypoint radius
@@ -377,42 +377,64 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 1000
     // @Increment: 0.1
     // @User: Standard
-	GSCALAR(waypoint_radius,        "WP_RADIUS",        2.0f),
+	GSCALAR(waypoint_radius,  "WP_RADIUS",    2.0f),
 
-	GGROUP(pidNavSteer,             "HDNG2STEER_",  PID),
-	GGROUP(pidServoSteer,           "STEER2SRV_",   PID),
-	GGROUP(pidSpeedThrottle,        "SPEED2THR_", PID),
+	GGROUP(pidNavSteer,       "HDNG2STEER_",  PID),
+	GGROUP(pidServoSteer,     "STEER2SRV_",   PID),
+	GGROUP(pidSpeedThrottle,  "SPEED2THR_",   PID),
 
 	// variables not in the g class which contain EEPROM saved variables
-	GOBJECT(compass,                "COMPASS_",	Compass),
-	GOBJECT(gcs0,					"SR0_",     GCS_MAVLINK),
-	GOBJECT(gcs3,					"SR3_",     GCS_MAVLINK),
+	GOBJECT(compass,          "COMPASS_",	  Compass),
+	GOBJECT(gcs0,             "SR0_",         GCS_MAVLINK),
+	GOBJECT(gcs3,		  "SR3_",         GCS_MAVLINK),
 
     // @Group: SONAR_
     // @Path: ../libraries/AP_RangeFinder/AP_RangeFinder_analog.cpp
-    GOBJECT(sonar,                  "SONAR_", AP_RangeFinder_analog),
+    GOBJECT(sonar,                "SONAR_",       AP_RangeFinder_analog),
 
     // @Group: SONAR2_
     // @Path: ../libraries/AP_RangeFinder/AP_RangeFinder_analog.cpp
-    GOBJECT(sonar2,                 "SONAR2_", AP_RangeFinder_analog),
+    GOBJECT(sonar2,               "SONAR2_",      AP_RangeFinder_analog),
     
         //---------- Added for Winch Controll ---------- JMS June 2013 ----------//
 
-    // @Param: Winch_Sample
+    // @Param: WINCH_SAMPLE
     // @DisplayName: Winch sampling motor speed
     // @Description: RC servo speed to controll winch motor controller for sampling (CTD => 1m/s)
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard    
-  	GSCALAR(w_motor_sample,        "WINCH_SAMPLE",        40),
+  	GSCALAR(w_motor_sample,   "WINCH_SAMPLE",     40),
   
-    // @Param: Winch_Slow
+    // @Param: WINCH_SLOW
     // @DisplayName: Winch slow motor speed
     // @Description: RC servo speed to controll winch motor controller for retracting A-frame
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard 	
-        GSCALAR(w_motor_slow,          "WINCH_SLOW",          5),
+        GSCALAR(w_motor_slow,      "WINCH_SLOW",      5),
+        
+    // @Param: AFRAME_DEBOUNCE
+    // @DisplayName: A-frame debounce count
+    // @Description: The number of 50Hz A-frame proximity reads needed to trigger a new A-frame state
+    // @Range: 1 100
+    // @Increment: 1
+    // @User: Standard
+	GSCALAR(aframe_debounce, "AFRAME_DEBOUNCE", 2),        
+
+    // @Param: AFRAME_AFT_PIN
+    // @DisplayName: Aframe Aft proximity sensing pin
+    // @Description: Setting this to 0 ~ 13 will enable proximity sensing on pins A0 ~ A13.
+    // @Values: -1:Disabled, 0:A0, 1:A1, 13:A13
+    // @User: Standard
+        GSCALAR(aframe_aft_pin,    "AFRAME_AFT_PIN",    0),
+
+    // @Param: AFRAME_FOR_PIN
+    // @DisplayName: Aframe Forward proximity sensing pin
+    // @Description: Setting this to 0 ~ 13 will enable proximity sensing on pins A0 ~ A13.
+    // @Values: -1:Disabled, 0:A0, 1:A1, 13:A13
+    // @User: Standard
+        GSCALAR(aframe_for_pin,    "AFRAME_FOR_PIN",    1),        
 
         //---------- END Added ----------//
 

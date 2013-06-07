@@ -13,7 +13,7 @@ static void init_rc_in()
 	g.channel_throttle2.set_dead_zone(6);
 
 	//set auxiliary ranges
-    update_aux_servo_function(&g.channel_winch_motor, &g.rc_5, &g.channel_winch_clutch, &g.rc_7, &g.rc_8);
+    update_aux_servo_function(&g.rc_5, &g.rc_7, &g.rc_8);
 }
 
 static void init_rc_out()

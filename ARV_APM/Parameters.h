@@ -133,6 +133,9 @@ public:
         // 230: Winch Controllers
         k_param_w_motor_sample,
         k_param_w_motor_slow,
+        k_param_aframe_debounce,
+        k_param_aframe_aft_pin,
+        k_param_aframe_for_pin,
         
         //---------- END Added ----------//        
 
@@ -168,17 +171,17 @@ public:
 
 	// Telemetry control
 	//
-	AP_Int16    sysid_this_mav;
-	AP_Int16    sysid_my_gcs;
-    AP_Int8	    serial0_baud;
-    AP_Int8	    serial3_baud;
+    AP_Int16    sysid_this_mav;
+    AP_Int16    sysid_my_gcs;
+    AP_Int8	serial0_baud;
+    AP_Int8	serial3_baud;
     AP_Int8     telem_delay;
 
     // sensor parameters
-    AP_Int8	    compass_enabled;
+    AP_Int8	compass_enabled;
 
     // battery controls
-    AP_Int8	    battery_monitoring;	// 0=disabled, 3=voltage only, 4=voltage and current
+    AP_Int8	battery_monitoring;	// 0=disabled, 3=voltage only, 4=voltage and current
     AP_Float    volt_div_ratio;
     AP_Float    curr_amp_per_volt;
     AP_Int16    pack_capacity;		// Battery pack capacity less reserve    
@@ -196,11 +199,11 @@ public:
 
     // RC channels
     RC_Channel      channel_steer;
-    RC_Channel_aux  channel_winch_motor;
+    RC_Channel      channel_winch_motor;
     RC_Channel      channel_throttle;
     RC_Channel      channel_throttle2;
     RC_Channel_aux  rc_5;
-    RC_Channel_aux  channel_winch_clutch;
+    RC_Channel      channel_winch_clutch;
     RC_Channel_aux  rc_7;
     RC_Channel_aux  rc_8;
 
@@ -254,6 +257,9 @@ public:
     // Winch controllers
     AP_Int8    w_motor_sample;
     AP_Int8    w_motor_slow;
+    AP_Int8    aframe_debounce;
+    AP_Int8    aframe_aft_pin;
+    AP_Int8    aframe_for_pin;
     
         //---------- END Added ----------//    
 
