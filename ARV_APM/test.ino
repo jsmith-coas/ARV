@@ -95,7 +95,7 @@ test_radio_pwm(uint8_t argc, const Menu::arg *argv)
 							g.channel_winch_motor.radio_in,
 							g.channel_throttle.radio_in,
 							g.channel_throttle2.radio_in,
-							g.rc_5.radio_in,
+							g.channel_camera_servo.radio_in,
 							g.channel_winch_clutch.radio_in,
 							g.rc_7.radio_in,
 							g.rc_8.radio_in);
@@ -162,7 +162,7 @@ test_radio(uint8_t argc, const Menu::arg *argv)
 							g.channel_winch_motor.control_in,
 							g.channel_throttle.control_in,
 							g.channel_throttle2.control_in,
-							g.rc_5.control_in,
+							g.channel_camera_servo.control_in,
 							g.channel_winch_clutch.control_in,
 							g.rc_7.control_in,
 							g.rc_8.control_in,

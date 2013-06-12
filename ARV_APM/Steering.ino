@@ -145,6 +145,47 @@ static void calc_nav_steer()
 }
 
 /*****************************************
+* Set the aframe/winch/camera control servos
+*****************************************/
+static void set_aframe(void) {
+  if (control_mode == MANUAL) {                                                             // Manual winch control is enabled only in MANUAL mode
+      if (aframe.for_sensor_state == 0) {                                                // --Aframe is retracted
+          //NOTE: sensor_state is HIGH when open, LOW when closed (pulls to ground)
+          g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;               // Disable the winch motor       
+          g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_max;              // Point camera forward   
+            // NOTE: To get the full 180° range of the servo, RC_INPUT_MAX_PULSEWIDTH and RC_INPUT_MIN_PULSEWIDTH must be changed in libraries/AP_HAL/RCInput.h
+      } else if (aframe.aft_sensor_state == 1) {                                         // --Aframe is retracting
+          g.channel_winch_motor.radio_out = constrain_int16(hal.rcin->read(CH_WINCH_MOTOR), // Limit winch motor to slow speed
+                                                            g.channel_winch_motor.radio_trim, 
+                                                            g.w_motor_slow);
+          g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;              // Point camera aft                                                                     
+      } else {                                                                           // --Aframe is extended
+          g.channel_winch_motor.radio_out = constrain_int16(hal.rcin->read(CH_WINCH_MOTOR), // Limit winch motor to high speed
+                                                            g.channel_winch_motor.radio_trim, 
+                                                            g.channel_winch_motor.radio_max);
+          g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;              // Point camera aft                                                                     
+      }
+      
+      g.channel_winch_clutch.radio_out   = hal.rcin->read(CH_WINCH_CLUTCH);                 // Pass winch servo commands through
+      
+      if (failsafe.bits & FAILSAFE_EVENT_THROTTLE) {
+          g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;      // turn off the winch's motor
+          g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;     // engage the winch clutch
+          g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;     // Point camera aft                                                                             
+      }       
+  } else {
+      g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;      // turn off the winch's motor
+      g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;     // engage the winch clutch
+      g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;     // Point camera aft                                                                             
+  } 
+  
+    	// send values to the PWM timers for output
+    hal.rcout->write(CH_2, g.channel_winch_motor.radio_out);  // send winch motor
+    hal.rcout->write(CH_6, g.channel_winch_clutch.radio_out); // send winch clutch
+    hal.rcout->write(CH_5, g.channel_camera_servo.radio_out); // send camera servo
+}  
+
+/*****************************************
 * Set the flight control servos based on the current calculated values
 *****************************************/
 static void set_servos(void) {
@@ -155,36 +196,13 @@ static void set_servos(void) {
     g.channel_steer.radio_out          = hal.rcin->read(CH_STEER);
     g.channel_throttle.radio_out       = hal.rcin->read(CH_THROTTLE);
     g.channel_throttle2.radio_out      = hal.rcin->read(CH_THROTTLE2);
-    if (control_mode == MANUAL) {                                                             // Manual winch control is enabled only in MANUAL mode
-        if (aframe.for_sensor_state == 0) {                                                // --Aframe is retracted
-            //NOTE: sensor_state is HIGH when open, LOW when closed (pulls to ground)
-            g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;               // Disable the winch motor       
-        } else if (aframe.aft_sensor_state == 1) {                                         // --Aframe is retracting
-            g.channel_winch_motor.radio_out = constrain_int16(hal.rcin->read(CH_WINCH_MOTOR), // Limit winch motor to slow speed
-                                                              g.channel_winch_motor.radio_trim, 
-                                                              g.w_motor_slow);
-        } else {                                                                           // --Aframe is extended
-            g.channel_winch_motor.radio_out = constrain_int16(hal.rcin->read(CH_WINCH_MOTOR), // Limit winch motor to high speed
-                                                              g.channel_winch_motor.radio_trim, 
-                                                              g.channel_winch_motor.radio_max);
-        }
-        
-        g.channel_winch_clutch.radio_out   = hal.rcin->read(CH_WINCH_CLUTCH);                 // Pass winch servo commands through
-    }
-    
   
     if (failsafe.bits & FAILSAFE_EVENT_THROTTLE) {
         // suppress throttle if in failsafe and manual
         g.channel_throttle.radio_out = g.channel_throttle.radio_trim;
-        g.channel_throttle2.radio_out = g.channel_throttle2.radio_trim;
-        g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;      // turn off the winch's motor
-        g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;     // engage the winch clutch
-    }        
+        g.channel_throttle2.radio_out = g.channel_throttle2.radio_trim;    }        
   } else {       
-    g.channel_steer.calc_pwm();                  
-    g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;      // turn off the winch's motor
-    g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;     // engage the winch clutch
-    
+    g.channel_steer.calc_pwm();                      
 
     if ((failsafe.bits & FAILSAFE_EVENT_THROTTLE) && control_mode < AUTO) {
         // suppress throttle if in failsafe
@@ -235,11 +253,7 @@ static void set_servos(void) {
     hal.rcout->write(CH_3, g.channel_throttle.radio_out);     // send to Servos
     hal.rcout->write(CH_4, g.channel_throttle2.radio_out);    // send to Servos
 
-    hal.rcout->write(CH_2, g.channel_winch_motor.radio_out);
-    hal.rcout->write(CH_6, g.channel_winch_clutch.radio_out);
-
       // Route configurable aux. functions to their respective servos
-    g.rc_5.output_ch(CH_5);
     g.rc_7.output_ch(CH_7);
     g.rc_8.output_ch(CH_8);
 

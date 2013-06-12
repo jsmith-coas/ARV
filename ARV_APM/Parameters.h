@@ -80,7 +80,7 @@ public:
         k_param_channel_winch_motor,
         k_param_channel_throttle,
         k_param_channel_throttle2,
-        k_param_rc_5,
+        k_param_channel_camera_servo,
         k_param_channel_winch_clutch,
         k_param_rc_7,
         k_param_rc_8,
@@ -202,7 +202,7 @@ public:
     RC_Channel      channel_winch_motor;
     RC_Channel      channel_throttle;
     RC_Channel      channel_throttle2;
-    RC_Channel_aux  rc_5;
+    RC_Channel      channel_camera_servo;
     RC_Channel      channel_winch_clutch;
     RC_Channel_aux  rc_7;
     RC_Channel_aux  rc_8;
@@ -269,7 +269,7 @@ public:
         channel_winch_motor(CH_2),
         channel_throttle(CH_3),
         channel_throttle2(CH_4),
-        rc_5(CH_5),
+        channel_camera_servo(CH_5),
         channel_winch_clutch(CH_6),
         rc_7(CH_7),
         rc_8(CH_8),

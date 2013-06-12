@@ -675,6 +675,7 @@ static void fast_loop()
 	// write out the servo PWM values
 	// ------------------------------
 	set_servos();
+        set_aframe();
 
     gcs_update();
     gcs_data_stream_send();
@@ -789,7 +790,7 @@ static void slow_loop()
 			// -------------------------------
 			read_control_switch();
 
-			update_aux_servo_function(&g.rc_5, &g.rc_7, &g.rc_8);
+			update_aux_servo_function(&g.rc_7, &g.rc_8);
 
 #if MOUNT == ENABLED
 			camera_mount.update_mount_type();
@@ -893,7 +894,7 @@ static void update_current_mode(void)
          */
         g.channel_throttle.servo_out = g.channel_throttle.control_in;
         g.channel_throttle2.servo_out = g.channel_throttle2.control_in;
-        g.channel_steer.servo_out = g.channel_steer.pwm_to_angle();
+        g.channel_steer.servo_out = g.channel_steer.pwm_to_angle();              
         break;
 
     case HOLD:

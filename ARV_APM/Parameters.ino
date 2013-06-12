@@ -195,7 +195,7 @@ const AP_Param::Info var_info[] PROGMEM = {
 	GGROUP(channel_winch_motor,     "RC2_", RC_Channel),
 	GGROUP(channel_throttle,        "RC3_", RC_Channel),
 	GGROUP(channel_throttle2,       "RC4_", RC_Channel),
-	GGROUP(rc_5,                    "RC5_", RC_Channel_aux),
+	GGROUP(channel_camera_servo,    "RC5_", RC_Channel),
 	GGROUP(channel_winch_clutch,    "RC6_", RC_Channel),
 	GGROUP(rc_7,                    "RC7_", RC_Channel_aux),
 	GGROUP(rc_8,                    "RC8_", RC_Channel_aux),
