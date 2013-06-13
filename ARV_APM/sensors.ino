@@ -56,11 +56,15 @@ static void read_aframe(void)
         if (check_digital_pin(g.aframe_aft_pin) != aframe.aft_sensor_state) {   //Sensor has changed
             if (aframe.aft_sensor_count < 127) {                              //Sensor hasn't rolled over error
                 aframe.aft_sensor_count++;
+            } else {
+                aframe.aft_sensor_state = 0;                                    //Sensor has an issue, set aframe logic to retracted. 
+                aframe.aft_sensor_count = 0;              
             }
             
-            if (aframe.aft_sensor_count == g.aframe_debounce) {
+            if (aframe.aft_sensor_count >= g.aframe_debounce) {
                 gcs_send_text_fmt(PSTR("Aframe changed aft sensor"));
                 aframe.aft_sensor_state = !aframe.aft_sensor_state;           //Invert aft sensor state
+                aframe.aft_sensor_count = 0;
             }     
             
             aframe.detected_time_ms = hal.scheduler->millis();                            
@@ -72,20 +76,23 @@ static void read_aframe(void)
         if (check_digital_pin(g.aframe_for_pin) != aframe.for_sensor_state) {   //Sensor has changed
             if (aframe.for_sensor_count < 127) {                              //Sensor hasn't rolled over error
                 aframe.for_sensor_count++;
+            } else {
+                aframe.for_sensor_state = 1;                                    //Sensor has an issue, set aframe logic to retracted.
+                aframe.for_sensor_count = 0;
             }
              
-            if (aframe.for_sensor_count == g.aframe_debounce) {
+            if (aframe.for_sensor_count >= g.aframe_debounce) {
                 gcs_send_text_fmt(PSTR("Aframe changed forward sensor"));
                 aframe.for_sensor_state = !aframe.for_sensor_state;           //Invert forward sensor state
+                aframe.for_sensor_count = 0;                
             }  
             
             aframe.detected_time_ms = hal.scheduler->millis();                            
         }
     }    
     
-    // no aframe move detected - reset after 1 second    
-    if ((aframe.aft_sensor_count >= g.aframe_debounce || aframe.for_sensor_count >= g.aframe_debounce) && hal.scheduler->millis() > aframe.detected_time_ms + 1000) { 
-        gcs_send_text_fmt(PSTR("Aframe move complete"));      
+    // no aframe move recently detected - reset after 1 second of inactivity   
+    if (hal.scheduler->millis() > aframe.detected_time_ms + 1000) { 
         aframe.aft_sensor_count = 0;
         aframe.for_sensor_count = 0;
         }    
