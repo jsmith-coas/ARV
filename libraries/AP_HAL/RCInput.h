@@ -4,8 +4,8 @@
 
 #include "AP_HAL_Namespace.h"
 
-#define RC_INPUT_MIN_PULSEWIDTH 900
-#define RC_INPUT_MAX_PULSEWIDTH 2100
+#define RC_INPUT_MIN_PULSEWIDTH 700
+#define RC_INPUT_MAX_PULSEWIDTH 2400
 
 class AP_HAL::RCInput {
 public:
