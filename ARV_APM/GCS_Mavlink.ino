@@ -1073,7 +1073,7 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
                 reboot_apm();
                 result = MAV_RESULT_ACCEPTED;
             }
-            break;
+            break;      
 
         default:
                 break;
@@ -1177,7 +1177,7 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
             z = tell_command.alt/1.0e2;
             }
 
-			switch (tell_command.id) {				// Switch to map APM command fields inot MAVLink command fields
+			switch (tell_command.id) {				// Switch to map APM command fields into MAVLink command fields
 
 				case MAV_CMD_NAV_TAKEOFF:
 				case MAV_CMD_DO_SET_HOME:
@@ -1456,6 +1456,8 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
                 break;
 
             case MAV_CMD_NAV_TAKEOFF:
+            case MAV_CMD_NAV_CTD_CAST:
+                tell_command.p1 = packet.param1;
             case MAV_CMD_DO_SET_HOME:
                 tell_command.p1 = packet.param1;
                 break;
@@ -1489,7 +1491,7 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
                 tell_command.alt = packet.param2;
                 tell_command.p1 = packet.param1;
                 break;
-
+                
             default:
                 result = MAV_MISSION_UNSUPPORTED;
                 break;

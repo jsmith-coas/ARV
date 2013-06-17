@@ -25,6 +25,10 @@ handle_process_nav_cmd()
 			do_RTL();
 			break;
 
+                case MAV_CMD_NAV_CTD_CAST:      // NAV command so it has to finish before jumping to next command.
+                        do_ctd_cast();
+                        break;
+                
 		default:
 			break;
 	}
@@ -130,6 +134,9 @@ static bool verify_nav_command()	// Returns true if command complete
 		case MAV_CMD_NAV_RETURN_TO_LAUNCH:
 			return verify_RTL();
 
+                case MAV_CMD_NAV_CTD_CAST:
+                        return verify_ctd_cast();
+
 		default:
 			gcs_send_text_P(SEVERITY_HIGH,PSTR("verify_nav: Invalid or no current Nav cmd"));
 			return false;
@@ -234,6 +241,15 @@ static bool verify_RTL()
     return false;
 }
 
+static bool verify_ctd_cast()
+{
+//	if (aframe_retract && cast_complete) {
+//		return true;
+//	}
+
+    return false;
+}
+
 /********************************************************************************/
 //  Condition (May) commands
 /********************************************************************************/
@@ -299,11 +315,11 @@ static void do_jump()
 	if(next_nonnav_command.lat > 0) {
 
 		nav_command_ID		= NO_COMMAND;
-		next_nav_command.id = NO_COMMAND;
+		next_nav_command.id     = NO_COMMAND;
 		non_nav_command_ID 	= NO_COMMAND;
 		
-		temp 				= get_cmd_with_index(g.command_index);
-		temp.lat 			= next_nonnav_command.lat - 1;					// Decrement repeat counter
+		temp 			= get_cmd_with_index(g.command_index);
+		temp.lat 		= next_nonnav_command.lat - 1;					// Decrement repeat counter
 
 		set_cmd_with_index(temp, g.command_index);
 	gcs_send_text_fmt(PSTR("setting command index: %i"),next_nonnav_command.p1 - 1);
@@ -404,10 +420,23 @@ static void do_repeat_servo()
 
 static void do_repeat_relay()
 {
-	event_id 		= RELAY_TOGGLE;
+	event_id        = RELAY_TOGGLE;
 	event_timer 	= 0;
 	event_delay 	= next_nonnav_command.lat * 500.0;	// /2 (half cycle time) * 1000 (convert to milliseconds)
 	event_repeat	= next_nonnav_command.alt * 2;
 	update_events();
+}
+
+static void do_ctd_cast()
+{
+       //Jed's CTD Cast function that is set via Mission Planner 
+    g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_max;         // disengage the winch clutch
+    delay(next_nav_command.p1*1000);
+    g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;         // engage the winch clutch
+    
+
+    
+   
+     
 }
 

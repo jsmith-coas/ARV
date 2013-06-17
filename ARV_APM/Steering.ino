@@ -148,7 +148,7 @@ static void calc_nav_steer()
 * Set the aframe/winch/camera control servos
 *****************************************/
 static void set_aframe(void) {
-  if (control_mode == MANUAL) {                                                             // Manual winch control is enabled only in MANUAL mode
+  if (control_mode == MANUAL || next_nonnav_command.id == false) {                                              // Manual winch control is enabled only in MANUAL mode
       if (aframe.for_sensor_state == 0) {                                                // --Aframe is retracted
           //NOTE: sensor_state is HIGH when open, LOW when closed (pulls to ground)
           g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;               // Disable the winch motor       
@@ -169,15 +169,15 @@ static void set_aframe(void) {
       g.channel_winch_clutch.radio_out   = hal.rcin->read(CH_WINCH_CLUTCH);                 // Pass winch servo commands through
       
       if (failsafe.bits & FAILSAFE_EVENT_THROTTLE) {
-          g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;      // turn off the winch's motor
-          g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;     // engage the winch clutch
-          g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;     // Point camera aft                                                                             
+          g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;          // turn off the winch's motor
+          g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;         // engage the winch clutch
+          g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;         // Point camera aft                                                                             
       }       
   } else {
-      g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;      // turn off the winch's motor
-      g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;     // engage the winch clutch
-      g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;     // Point camera aft                                                                             
-  } 
+      g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;               // turn off the winch's motor
+      g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;              // engage the winch clutch
+      g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_max;              // Point camera forward   
+} 
   
     	// send values to the PWM timers for output
     hal.rcout->write(CH_2, g.channel_winch_motor.radio_out);  // send winch motor
