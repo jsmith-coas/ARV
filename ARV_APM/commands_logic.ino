@@ -24,10 +24,6 @@ handle_process_nav_cmd()
 		case MAV_CMD_NAV_RETURN_TO_LAUNCH:
 			do_RTL();
 			break;
-
-                case MAV_CMD_NAV_CTD_CAST:      // NAV command so it has to finish before jumping to next command.
-                        do_ctd_cast();
-                        break;
                 
 		default:
 			break;
@@ -134,9 +130,6 @@ static bool verify_nav_command()	// Returns true if command complete
 		case MAV_CMD_NAV_RETURN_TO_LAUNCH:
 			return verify_RTL();
 
-                case MAV_CMD_NAV_CTD_CAST:
-                        return verify_ctd_cast();
-
 		default:
 			gcs_send_text_P(SEVERITY_HIGH,PSTR("verify_nav: Invalid or no current Nav cmd"));
 			return false;
@@ -209,7 +202,10 @@ static bool verify_nav_wp()
         gcs_send_text_fmt(PSTR("Reached Waypoint #%i dist %um"),
                           (unsigned)nav_command_index,
                           (unsigned)get_distance(&current_loc, &next_WP));
-        return true;
+                          
+        // Waypoint has been reached, do we perform a CTD cast and is it complete?
+        return verify_ctd_cast();
+        //return true;
     }
 
     // have we gone past the waypoint?
@@ -241,14 +237,6 @@ static bool verify_RTL()
     return false;
 }
 
-static bool verify_ctd_cast()
-{
-//	if (aframe_retract && cast_complete) {
-//		return true;
-//	}
-
-    return false;
-}
 
 /********************************************************************************/
 //  Condition (May) commands
@@ -427,16 +415,4 @@ static void do_repeat_relay()
 	update_events();
 }
 
-static void do_ctd_cast()
-{
-       //Jed's CTD Cast function that is set via Mission Planner 
-    g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_max;         // disengage the winch clutch
-    delay(next_nav_command.p1*1000);
-    g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;         // engage the winch clutch
-    
-
-    
-   
-     
-}
 

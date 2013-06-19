@@ -164,7 +164,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 100
     // @Increment: 0.1
     // @User: Standard
-	GSCALAR(speed_cruise,        "CRUISE_SPEED",    5),
+	GSCALAR(speed_cruise,        "CRUISE_SPEED",    4),
 
     // @Param: SPEED_TURN_GAIN
     // @DisplayName: Target speed reduction while turning
@@ -173,7 +173,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-	GSCALAR(speed_turn_gain,    "SPEED_TURN_GAIN",  50),
+	GSCALAR(speed_turn_gain,    "SPEED_TURN_GAIN",  40),
 
     // @Param: SPEED_TURN_DIST
     // @DisplayName: Distance to turn to start reducing speed
@@ -412,7 +412,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 2000 ms
     // @Increment: 1
     // @User: Standard 	
-        GSCALAR(w_motor_slow,      "WINCH_SLOW",      1540),
+        GSCALAR(w_motor_slow,      "WINCH_SLOW",      1630),
         
     // @Param: AFRAME_DEBOUNCE
     // @DisplayName: A-frame debounce count
@@ -434,7 +434,21 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Description: Setting this to 0 ~ 13 will enable proximity sensing on pins A0 ~ A13.
     // @Values: -1:Disabled, 0:A0, 1:A1, 13:A13
     // @User: Standard
-        GSCALAR(aframe_for_pin,    "AFRAME_FOR_PIN",    1),        
+        GSCALAR(aframe_for_pin,    "AFRAME_FOR_PIN",    1),  
+  
+     // @Param: CTD_DEPTH_TO_TIME_MS
+    // @DisplayName: CTD multiplier for converting requested depth to free-spooling time
+    // @Description: Millisecond time based multiplier for converting depth (m) to free-spooling time (ms)
+    // @Values: 1 9000
+    // @User: Standard
+        GSCALAR(ctd_depth_to_time_ms,    "CTD_D-T_MS",    1000),
+
+    // @Param: AFRAME_FOR_PIN
+    // @DisplayName: Max CTD cast depth
+    // @Description: This is the max safe CTD casting depth. Used to bound CTD cast requests
+    // @Values: 0 100
+    // @User: Standard
+        GSCALAR(ctd_max_depth,    "CTD_MAX_DEPTH",    100),  
 
         //---------- END Added ----------//
 

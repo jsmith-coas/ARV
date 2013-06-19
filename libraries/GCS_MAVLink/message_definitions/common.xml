@@ -427,7 +427,7 @@
                     <param index="5">Latitude</param>
                     <param index="6">Longitude</param>
                     <param index="7">Altitude</param>
-               </entry>
+               </entry> 
                <entry value="80" name="MAV_CMD_NAV_ROI">
                     <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
                     <param index="1">Region of intereset mode. (see MAV_ROI enum)</param>
@@ -597,17 +597,7 @@
                     <param index="5">Empty</param>
                     <param index="6">Empty</param>
                     <param index="7">Empty</param>
-               </entry>
-               <entry value="185" name="MAV_CMD_DO_CTD_CAST">
-                    <description>Deploy A-frame, lower CTD to specified depth, winch back up, retract A-frame.</description>
-                    <param index="1">Cast depth</param>
-                    <param index="2">Empty</param>
-                    <param index="3">Empty</param>
-                    <param index="4">Empty</param>
-                    <param index="5">Empty</param>
-                    <param index="6">Empty</param>
-                    <param index="7">Empty</param>
-               </entry>                 
+               </entry>             
                <entry value="200" name="MAV_CMD_DO_CONTROL_VIDEO">
                     <description>Control onboard camera system.</description>
                     <param index="1">Camera ID (-1 for all)</param>

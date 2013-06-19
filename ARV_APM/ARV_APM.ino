@@ -4,7 +4,7 @@
 //Note: difference between 2.41 and 2.42beta is addition to line 814 of have_position = ahrs.get_projected_position(&current_loc); instead of have_position = ahrs.get_position(&current_loc);
 
 /* 
-This is the ARV_APM firmware. It was originally derived from APMrover2
+This is the RV_ROB_APM firmware. It was originally derived from APMrover2
 by Jed Smith (JMS), 28 May 2013. 
 
 This is the APMrover2 firmware. It was originally derived from
@@ -397,17 +397,22 @@ static struct {
 static bool auto_triggered;
 
 ////////////////////////////////////////////////////////////////////////////////
-// Aframe and Winch for the ARV - JMS
+// Aframe and Winch for RV Rob - JMS
 ////////////////////////////////////////////////////////////////////////////////
 
 static struct {
-    // have we moved the aframe?
-    bool aft_sensor_state;
-    uint8_t aft_sensor_count;
-    bool for_sensor_state;
-    uint8_t for_sensor_count;
+    bool     aft_sensor_state;
+    uint8_t  aft_sensor_count;
+    bool     for_sensor_state;
+    uint8_t  for_sensor_count;
     uint32_t detected_time_ms;
 } aframe;
+
+static struct {
+    uint16_t cast_depth_m;
+    bool     cast_complete;
+    uint32_t cast_start_time_ms;
+} ctd;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Ground speed

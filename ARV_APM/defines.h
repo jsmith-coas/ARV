@@ -70,6 +70,7 @@ enum mode {
 #define FAILSAFE_EVENT_THROTTLE (1<<0)
 #define FAILSAFE_EVENT_GCS      (1<<1)
 #define FAILSAFE_EVENT_RC       (1<<2)
+//#define FAILSAFE_EVENT_CTD      (1<<3)
 
 // Commands - Note that APM now uses a subset of the MAVLink protocol commands.  See enum MAV_CMD in the GCS_Mavlink library
 #define CMD_BLANK 0 // there is no command stored in the mem location requested
@@ -212,5 +213,9 @@ enum ap_message {
 #define AP_COMPASS_HMC5843   1
 #define AP_COMPASS_PX4       2
 #define AP_COMPASS_HIL       3
+
+// RV Rob Defines
+#define CTD_DEPLOY_TIME_MS   2000  // Amount of time it takes the A-frame to deploy, added to cast time, in ms
+#define CTD_ERROR_FACTOR     2.2   // Time multiplier applied to depth before line is assumed snagged
 
 #endif // _DEFINES_H

@@ -1456,8 +1456,6 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
                 break;
 
             case MAV_CMD_NAV_TAKEOFF:
-            case MAV_CMD_NAV_CTD_CAST:
-                tell_command.p1 = packet.param1;
             case MAV_CMD_DO_SET_HOME:
                 tell_command.p1 = packet.param1;
                 break;

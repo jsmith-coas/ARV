@@ -129,6 +129,9 @@ static void set_next_WP(const struct Location *wp)
 	// set a new crosstrack bearing
 	// ----------------------------
 	reset_crosstrack();
+
+        // for the CTD
+        ctd_cast_set_for_next();
 }
 
 static void set_guided_WP(void)
