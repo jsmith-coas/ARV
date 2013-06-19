@@ -55,29 +55,29 @@ static void read_aframe(void)
 * Steering - Set the aframe/winch/camera control servos
 *****************************************/
 static void set_aframe(void) {
-  if (control_mode == MANUAL) {                                              // Manual winch control is enabled only in MANUAL mode, not LEARNING
-      if (aframe.for_sensor_state == 0) {                                                // --Aframe is retracted
-          //NOTE: sensor_state is HIGH when open, LOW when closed (pulls to ground)
-          g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;               // Disable the winch motor       
-          g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_max;              // Point camera forward   
-            // NOTE: To get the full 180° range of the servo, RC_INPUT_MAX_PULSEWIDTH and RC_INPUT_MIN_PULSEWIDTH must be changed in libraries/AP_HAL/RCInput.h
-      } else if (aframe.aft_sensor_state == 1) {                                         // --Aframe is retracting
-          g.channel_winch_motor.radio_out = constrain_int16(hal.rcin->read(CH_WINCH_MOTOR), // Limit winch motor to slow speed
-                                                            g.channel_winch_motor.radio_trim, 
-                                                            g.w_motor_slow);
-          g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;              // Point camera aft                                                                     
-      } else {                                                                           // --Aframe is extended
-          g.channel_winch_motor.radio_out = constrain_int16(hal.rcin->read(CH_WINCH_MOTOR), // Limit winch motor to high speed
-                                                            g.channel_winch_motor.radio_trim, 
-                                                            g.channel_winch_motor.radio_max);
-          g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;              // Point camera aft                                                                     
-      }
-      g.channel_winch_clutch.radio_out   = hal.rcin->read(CH_WINCH_CLUTCH);                 // Pass winch servo commands through
-      
-  } else if (ctd.cast_complete) {
-      winch_hold();
-      g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_max;              // Point camera forward   
-  } //else let the ctd_cast_do function set the a-frame/winch servos
+    if (control_mode == MANUAL) {                                              // Manual winch control is enabled only in MANUAL mode, not LEARNING
+        g.channel_winch_clutch.radio_out = hal.rcin->read(CH_WINCH_CLUTCH);    // Read winch servo commands through
+        g.channel_winch_motor.radio_out  = hal.rcin->read(CH_WINCH_MOTOR);     // Read winch motor commands through
+    } else if (ctd.cast_complete) {
+        winch_hold();
+    } //else let the ctd_cast_do function set the a-frame/winch servos
+  
+    // Limit motor speed depending on A-frame position
+        //NOTE: sensor_state is HIGH when open, LOW when closed (pulls to ground)
+    if (aframe.for_sensor_state == 0) {                                                // --Aframe is retracted
+        g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;               // Disable the winch motor  
+        g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_max;         // Point camera forward           
+    } else if (aframe.aft_sensor_state == 1) {                                         // --Aframe is retracting
+        g.channel_winch_motor.radio_out = constrain_int16(g.channel_winch_motor.radio_out, // Limit winch motor to slow speed
+                                                          g.channel_winch_motor.radio_trim, 
+                                                          g.w_motor_slow);
+        g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;           // Point camera aft                                                                                                                                   
+    } else {                                                                           // --Aframe is extended
+        g.channel_winch_motor.radio_out = constrain_int16(g.channel_winch_motor.radio_out, // Limit winch motor to high speed
+                                                          g.channel_winch_motor.radio_trim, 
+                                                          g.channel_winch_motor.radio_max);
+        g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;           // Point camera aft                                                                                                                                                                                             
+    }
 
 }  
 
@@ -117,7 +117,7 @@ static void ctd_cast_do()
       } else {
           if ((ctd.cast_start_time_ms + (ctd.cast_depth_m * g.ctd_depth_to_time_ms)) >= hal.scheduler->millis()) {  // Depth has been reached
               winch_retract(g.w_motor_sample);                          // winch to sample speed
-              if ((ctd.cast_start_time_ms + (CTD_ERROR_FACTOR * (ctd.cast_depth_m * g.ctd_depth_to_time_ms))) >= hal.scheduler->millis()) {  // If twice the time has passed and a-frame isn't retracted yet, assume line snag
+              if ((ctd.cast_start_time_ms + (CTD_TIME_SNAG_FACTOR * (ctd.cast_depth_m * g.ctd_depth_to_time_ms))) >= hal.scheduler->millis()) {  // If twice the time has passed and a-frame isn't retracted yet, assume line snag
                   winch_hold();                    
                   ctd.cast_complete = true;
               }
@@ -134,6 +134,7 @@ static void winch_hold()
 {
     g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;          // turn off the winch's motor   
     g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;         // engage the winch clutch
+        // NOTE: To get the full 180° range of the servo, RC_INPUT_MAX_PULSEWIDTH and RC_INPUT_MIN_PULSEWIDTH must be changed in libraries/AP_HAL/RCInput.h    
 }    
   
 static void winch_freefall()
