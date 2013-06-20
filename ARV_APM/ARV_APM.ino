@@ -410,8 +410,7 @@ static struct {
 
 static struct {
     uint16_t cast_depth_m;
-    bool     cast_complete;
-    uint32_t cast_start_time_ms;
+    uint32_t cast_end_time_ms;
 } ctd;
 
 ////////////////////////////////////////////////////////////////////////////////

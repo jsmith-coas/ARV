@@ -199,9 +199,9 @@ static bool verify_nav_wp()
     update_crosstrack();
 
     if ((wp_distance > 0) && (wp_distance <= g.waypoint_radius)) {
-        gcs_send_text_fmt(PSTR("Reached Waypoint #%i dist %um"),
-                          (unsigned)nav_command_index,
-                          (unsigned)get_distance(&current_loc, &next_WP));
+//        gcs_send_text_fmt(PSTR("Reached Waypoint #%i dist %um"),
+//                          (unsigned)nav_command_index,
+//                          (unsigned)get_distance(&current_loc, &next_WP));
                           
         // Waypoint has been reached, do we perform a CTD cast and is it complete?
         return verify_ctd_cast();
