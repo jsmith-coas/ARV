@@ -411,6 +411,7 @@ static struct {
 static struct {
     uint16_t cast_depth_m;
     uint32_t cast_end_time_ms;
+    bool     cast_done;
 } ctd;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -679,7 +680,7 @@ static void fast_loop()
 	// write out the servo PWM values
 	// ------------------------------
 	set_servos();
-        set_aframe();
+        set_winch();
 
     gcs_update();
     gcs_data_stream_send();

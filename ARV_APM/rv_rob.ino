@@ -14,9 +14,9 @@ static void read_aframe(void)
             }
             
             if (aframe.aft_sensor_count >= g.aframe_debounce) {
-                gcs_send_text_fmt(PSTR("Aframe changed aft sensor"));
                 aframe.aft_sensor_state = !aframe.aft_sensor_state;           //Invert aft sensor state
                 aframe.aft_sensor_count = 0;
+                gcs_send_text_fmt(PSTR("Aframe changed aft sensor, state %i"), aframe.aft_sensor_state);                
             }     
             
             aframe.detected_time_ms = hal.scheduler->millis();                            
@@ -34,9 +34,9 @@ static void read_aframe(void)
             }
              
             if (aframe.for_sensor_count >= g.aframe_debounce) {
-                gcs_send_text_fmt(PSTR("Aframe changed forward sensor"));
                 aframe.for_sensor_state = !aframe.for_sensor_state;           //Invert forward sensor state
-                aframe.for_sensor_count = 0;                
+                aframe.for_sensor_count = 0;        
+                gcs_send_text_fmt(PSTR("Aframe changed forward sensor, state %i"), aframe.for_sensor_state);                
             }  
             
             aframe.detected_time_ms = hal.scheduler->millis();                            
@@ -54,11 +54,13 @@ static void read_aframe(void)
 /*****************************************
 * Steering - Set the aframe/winch/camera control servos
 *****************************************/
-static void set_aframe(void) {
+static void set_winch(void) {
     if (control_mode == MANUAL) {                                              // Manual winch control is enabled only in MANUAL mode, not LEARNING
         g.channel_winch_clutch.radio_out = hal.rcin->read(CH_WINCH_CLUTCH);    // Read winch servo commands through
         g.channel_winch_motor.radio_out  = hal.rcin->read(CH_WINCH_MOTOR);     // Read winch motor commands through
     } //else let the ctd_cast_do function set the a-frame/winch servos
+    
+    ctd_cast_do();  // Check to see if we need to be casting the CTD
   
     // Limit motor speed depending on A-frame position
         //NOTE: sensor_state is HIGH when open, LOW when closed (pulls to ground)
@@ -85,45 +87,44 @@ static void set_aframe(void) {
 static bool verify_ctd_cast()
 {
     if (ctd.cast_depth_m > 0) {   // There is a CTD cast at this waypoint
-        if (ctd_cast_do()) {    // The cast has already happened
-            if (aframe.for_sensor_state == 0 && aframe.aft_sensor_state == 1) {  // A-frame is fully retracted
-                gcs_send_text_fmt(PSTR("CTD Cast Completed"));
-                return true;
-            } else {                                                             // A-frame has an issue, possible snag. Error.
-                gcs_send_text_fmt(PSTR("CTD Cast Error"));              
-                //failsafe_trigger(FAILSAFE_EVENT_CTD, true);
-                return true; //we're going to get stuck on this waypoint, but that is OK since line is assumed snagged
-            }
-        } else {                    // The cast needs to happen or is occuring
-            return false; //not yet done with this CTD cast
+        if (ctd.cast_end_time_ms == 0) {    // The cast has not yet been started happened, lets start it
+            ctd.cast_end_time_ms = hal.scheduler->millis() + CTD_DEPLOY_TIME_MS  + (ctd.cast_depth_m * g.ctd_depth_to_time_ms);   
+            gcs_send_text_fmt(PSTR("Started CTD Cast, depth #%i"),
+                                  (unsigned)ctd.cast_depth_m);            
+            return false;
+        } else {
+            return ctd.cast_done;  // Check to see what the status of the CTD cast is
         }
-    } else {                    // No CTD cast to complete at this waypoint
-        return true;
+    }
+}   
+
+
+/*****************************************
+* Commands_logic - CTD Cast Do Function
+*****************************************/
+static void ctd_cast_do()
+{
+    if (ctd.cast_end_time_ms > 0  && !ctd.cast_done) {  // CTD underway
+        if (hal.scheduler->millis() >= (ctd.cast_end_time_ms * CTD_TIME_SNAG_FACTOR)) {  // CTD cast still in allotted time
+            if (hal.scheduler->millis() < ctd.cast_end_time_ms) {
+                winch_freefall();
+            } else {
+                winch_retract(g.w_motor_sample);        // winch to sample speed
+                if (aframe.for_sensor_state == 0) {
+                    winch_hold();                    
+                    ctd.cast_done = true;
+                    gcs_send_text_fmt(PSTR("CTD Cast Completed Successfully"));                    
+                }                  
+            } 
+        } else {
+            ctd.cast_done = true;
+            gcs_send_text_fmt(PSTR("CTD Cast Error, ran out of time..."));                          
+        }
+    // } else { // CTD cast is complete or not required, don't need to do anything here
     }
 }
 
-/*****************************************
-* Commands_logic - CTD Cast Function
-*****************************************/
-static bool ctd_cast_do()
-{
-      if (ctd.cast_end_time_ms == 0) {  // Cast has not been started, lets start
-          ctd.cast_end_time_ms = hal.scheduler->millis() + CTD_DEPLOY_TIME_MS  + (ctd.cast_depth_m * g.ctd_depth_to_time_ms);
-          winch_freefall();  
-          return false;
-      } else {
-          if (hal.scheduler->millis() >= ctd.cast_end_time_ms) {  // Depth has been reached
-              winch_retract(g.w_motor_sample);                          // winch to sample speed
-              if ((hal.scheduler->millis() >= ctd.cast_end_time_ms * CTD_TIME_SNAG_FACTOR) || aframe.for_sensor_state == 0) {  // If twice the time has passed and a-frame isn't retracted yet, assume line snag
-                  winch_hold();                    
-                  return true;
-              }
-          } else {  //else we wait for the CTD to keep free-falling...
-              winch_freefall(); 
-              return false; 
-          }        
-      }
-}
+
 
 /*****************************************
 * Steering - Winch/servo basic functions
@@ -152,7 +153,8 @@ static void winch_retract(uint16_t winch_speed)
 *****************************************/
 static void ctd_cast_set_for_next()
 {
-    ctd.cast_end_time_ms = 0;  // reset the cast timer                
+    ctd.cast_end_time_ms = 0;  // reset the cast timer 
+    ctd.cast_done = false;     // reset the bool completed flag
     
     // NOTE: using the WayPoints intended altitude since it isn't used on the rover and Mission Planner changes were not working
     ctd.cast_depth_m = constrain_int16(next_WP.alt/100, 0, g.ctd_max_depth); //convert from cm to m for cast depth, constrain to winch line length
