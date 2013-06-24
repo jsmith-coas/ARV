@@ -269,11 +269,6 @@ static void startup_ground(void)
 		delay(GROUND_START_DELAY * 1000);
 	#endif
 
-	// Makes the servos wiggle
-	// step 1 = 1 wiggle
-	// -----------------------
-	demo_servos(1);
-
 	//IMU ground start
 	//------------------------
     //
@@ -287,10 +282,6 @@ static void startup_ground(void)
 	// initialize commands
 	// -------------------
 	init_commands();
-
-	// Makes the servos wiggle - 3 times signals ready to fly
-	// -----------------------
-	demo_servos(3);
 
 	gcs_send_text_P(SEVERITY_LOW,PSTR("\n\n Ready to drive."));
 }

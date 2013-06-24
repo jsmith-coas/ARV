@@ -16,7 +16,7 @@ static void read_aframe(void)
             if (aframe.aft_sensor_count >= g.aframe_debounce) {
                 aframe.aft_sensor_state = !aframe.aft_sensor_state;           //Invert aft sensor state
                 aframe.aft_sensor_count = 0;
-                gcs_send_text_fmt(PSTR("Aframe changed aft sensor, state %i"), aframe.aft_sensor_state);                
+                gcs_send_text_fmt(PSTR("Aframe AFT %i"), aframe.aft_sensor_state);                
             }     
             
             aframe.detected_time_ms = hal.scheduler->millis();                            
@@ -36,7 +36,7 @@ static void read_aframe(void)
             if (aframe.for_sensor_count >= g.aframe_debounce) {
                 aframe.for_sensor_state = !aframe.for_sensor_state;           //Invert forward sensor state
                 aframe.for_sensor_count = 0;        
-                gcs_send_text_fmt(PSTR("Aframe changed forward sensor, state %i"), aframe.for_sensor_state);                
+                gcs_send_text_fmt(PSTR("Aframe FOR %i"), aframe.for_sensor_state);                
             }  
             
             aframe.detected_time_ms = hal.scheduler->millis();                            
@@ -60,7 +60,7 @@ static void set_winch(void) {
         g.channel_winch_motor.radio_out  = hal.rcin->read(CH_WINCH_MOTOR);     // Read winch motor commands through
     } //else let the ctd_cast_do function set the a-frame/winch servos
     
-    ctd_cast_do();  // Check to see if we need to be casting the CTD
+    //ctd_cast_do();  // Check to see if we need to be casting the CTD
   
     // Limit motor speed depending on A-frame position
         //NOTE: sensor_state is HIGH when open, LOW when closed (pulls to ground)
@@ -89,8 +89,8 @@ static bool verify_ctd_cast()
     if (ctd.cast_depth_m > 0) {   // There is a CTD cast at this waypoint
         if (ctd.cast_end_time_ms == 0) {    // The cast has not yet been started happened, lets start it
             ctd.cast_end_time_ms = hal.scheduler->millis() + CTD_DEPLOY_TIME_MS  + (ctd.cast_depth_m * g.ctd_depth_to_time_ms);   
-            gcs_send_text_fmt(PSTR("Started CTD Cast, depth #%i"),
-                                  (unsigned)ctd.cast_depth_m);            
+//            gcs_send_text_fmt(PSTR("Started CTD Cast, depth #%i, start %d, end %d"),
+//                                  (unsigned)ctd.cast_depth_m), hal.scheduler->millis(), ctd.cast_end_time_ms;            
             return false;
         } else {
             return ctd.cast_done;  // Check to see what the status of the CTD cast is
@@ -113,12 +113,11 @@ static void ctd_cast_do()
                 if (aframe.for_sensor_state == 0) {
                     winch_hold();                    
                     ctd.cast_done = true;
-                    gcs_send_text_fmt(PSTR("CTD Cast Completed Successfully"));                    
+                    gcs_send_text_fmt(PSTR("CTD Successful"));                    
                 }                  
             } 
         } else {
             ctd.cast_done = true;
-            gcs_send_text_fmt(PSTR("CTD Cast Error, ran out of time..."));                          
         }
     // } else { // CTD cast is complete or not required, don't need to do anything here
     }

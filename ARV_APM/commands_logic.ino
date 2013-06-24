@@ -205,7 +205,7 @@ static bool verify_nav_wp()
                           
         // Waypoint has been reached, do we perform a CTD cast and is it complete?
         return verify_ctd_cast();
-        //return true;
+//        return true;
     }
 
     // have we gone past the waypoint?
