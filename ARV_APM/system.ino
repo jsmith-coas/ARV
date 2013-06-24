@@ -372,13 +372,10 @@ static void failsafe_trigger(uint8_t failsafe_type, bool on)
 static void startup_INS_ground(bool force_accel_level)
 {
 #if HIL_MODE != HIL_MODE_ATTITUDE
-    gcs_send_text_P(SEVERITY_MEDIUM, PSTR("Warming up ADC..."));
+    gcs_send_text_P(SEVERITY_MEDIUM, PSTR("Warming up ADC"));
  	mavlink_delay(500);
 
-	// Makes the servos wiggle twice - about to begin INS calibration - HOLD LEVEL AND STILL!!
-	// -----------------------
-	demo_servos(2);
-    gcs_send_text_P(SEVERITY_MEDIUM, PSTR("Beginning INS calibration; do not move vehicle"));
+    gcs_send_text_P(SEVERITY_MEDIUM, PSTR("Beginning INS calibration"));
 	mavlink_delay(1000);
 
     ahrs.init();
