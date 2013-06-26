@@ -32,6 +32,7 @@ public:
         k_param_num_resets,
         k_param_reset_switch_chan,
         k_param_initial_mode,
+        k_param_scheduler,
 
         // IO pins
         k_param_rssi_pin = 20,
@@ -139,7 +140,7 @@ public:
         k_param_ctd_depth_to_time_ms = 1000,
         k_param_ctd_max_depth = 100,
         
-        //---------- END Added ----------//        
+        //---------- END Added ----------//  
 
         //
         // 240: PID Controllers
@@ -152,11 +153,12 @@ public:
         k_param_ahrs,
         k_param_ins,
         k_param_compass,
+        k_param_rcmap,
 
         // 254,255: reserved
         };
 
-        AP_Int16    format_version;
+    AP_Int16    format_version;
 	AP_Int8	    software_type;
 
     // Misc
@@ -173,17 +175,17 @@ public:
 
 	// Telemetry control
 	//
-    AP_Int16    sysid_this_mav;
-    AP_Int16    sysid_my_gcs;
-    AP_Int8	serial0_baud;
-    AP_Int8	serial3_baud;
+	AP_Int16    sysid_this_mav;
+	AP_Int16    sysid_my_gcs;
+    AP_Int8	    serial0_baud;
+    AP_Int8	    serial3_baud;
     AP_Int8     telem_delay;
 
     // sensor parameters
-    AP_Int8	compass_enabled;
+    AP_Int8	    compass_enabled;
 
     // battery controls
-    AP_Int8	battery_monitoring;	// 0=disabled, 3=voltage only, 4=voltage and current
+    AP_Int8	    battery_monitoring;	// 0=disabled, 3=voltage only, 4=voltage and current
     AP_Float    volt_div_ratio;
     AP_Float    curr_amp_per_volt;
     AP_Int16    pack_capacity;		// Battery pack capacity less reserve    
@@ -195,7 +197,7 @@ public:
     AP_Float    speed_cruise;
     AP_Int8     speed_turn_gain;
     AP_Float    speed_turn_dist;    
-    AP_Int8	ch7_option;
+    AP_Int8	    ch7_option;
     AP_Int8     auto_trigger_pin;
     AP_Float    auto_kickstart;
 
@@ -254,7 +256,7 @@ public:
     PID         pidServoSteer;
     PID         pidSpeedThrottle;
     
-        //---------- Added for Winch Controll ---------- JMS June 2013 ----------//
+//---------- Added for Winch Controll ---------- JMS June 2013 ----------//
         
     // Winch controllers
     AP_Int16   w_motor_sample;
@@ -262,10 +264,10 @@ public:
     AP_Int8    aframe_debounce;
     AP_Int8    aframe_aft_pin;
     AP_Int8    aframe_for_pin;
-    AP_Int16    ctd_depth_to_time_ms;
+    AP_Int16   ctd_depth_to_time_ms;
     AP_Int8    ctd_max_depth;
     
-        //---------- END Added ----------//    
+//---------- END Added ----------//      
 
     Parameters() :
         // RC channels

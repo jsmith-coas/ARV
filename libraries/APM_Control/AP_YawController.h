@@ -1,4 +1,4 @@
-// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: t -*-
+// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #ifndef __AP_YAW_CONTROLLER_H__
 #define __AP_YAW_CONTROLLER_H__
@@ -30,6 +30,7 @@ private:
 	AP_Float _K_I;
 	AP_Float _K_D;
 	AP_Float _K_FF;
+    AP_Int8  _imax;
 	uint32_t _last_t;
 	float _last_error;
 	float _last_out;

@@ -36,11 +36,14 @@ void failsafe_check(uint32_t tnow)
     }
 
     if (in_failsafe && tnow - last_timestamp > 20000 && 
-        hal.rcin->read(CH_3) >= (uint16_t)g.fs_throttle_value) {
+        channel_throttle->read() >= (uint16_t)g.fs_throttle_value) {
         // pass RC inputs to outputs every 20ms        
         last_timestamp = tnow;
         hal.rcin->clear_overrides();
         uint8_t start_ch = 0;
+        if (demoing_servos) {
+            start_ch = 1;
+        }
         for (uint8_t ch=start_ch; ch<4; ch++) {
             hal.rcout->write(ch, hal.rcin->read(ch));
         }

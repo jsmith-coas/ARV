@@ -225,7 +225,7 @@ setup_radio(uint8_t argc, const Menu::arg *argv)
 	}
 
 
-	if(g.channel_steer.radio_in < 500){
+	if(channel_steer->radio_in < 500){
 		while(1){
 			cliSerial->printf_P(PSTR("\nNo radio; Check connectors."));
 			delay(1000);
@@ -233,26 +233,26 @@ setup_radio(uint8_t argc, const Menu::arg *argv)
 		}
 	}
 
-	g.channel_steer.radio_min 		= g.channel_steer.radio_in;
-	g.channel_throttle.radio_min 	= g.channel_throttle.radio_in;
-        g.channel_throttle2.radio_min   = g.channel_throttle2.radio_in;
-	g.channel_winch_motor.radio_min = g.channel_winch_motor.radio_in;
-	g.channel_camera_servo.radio_min = g.channel_camera_servo.radio_in;
-	g.channel_winch_clutch.radio_min = g.channel_winch_clutch.radio_in;
+	channel_steer->radio_min          = channel_steer->radio_in;
+	channel_throttle->radio_min 	  = channel_throttle->radio_in;
+	channel_throttle2->radio_min 	  = channel_throttle2->radio_in;
+	g.channel_winch_motor.radio_min   = g.channel_winch_motor.radio_in;
+	g.channel_camera_servo.radio_min  = g.channel_camera_servo.radio_in;
+	g.channel_winch_clutch.radio_min  = g.channel_winch_clutch.radio_in;
 	g.rc_7.radio_min = g.rc_7.radio_in;
 	g.rc_8.radio_min = g.rc_8.radio_in;
 
-	g.channel_steer.radio_max 		= g.channel_steer.radio_in;
-	g.channel_throttle.radio_max 	= g.channel_throttle.radio_in;
-        g.channel_throttle2.radio_max   = g.channel_throttle2.radio_in;
-	g.channel_winch_motor.radio_max = g.channel_winch_motor.radio_in;
-	g.channel_camera_servo.radio_max = g.channel_camera_servo.radio_in;
-	g.channel_winch_clutch.radio_max = g.channel_winch_clutch.radio_in;
+	channel_steer->radio_max          = channel_steer->radio_in;
+	channel_throttle->radio_max 	  = channel_throttle->radio_in;
+	channel_throttle2->radio_max 	  = channel_throttle2->radio_in;
+	g.channel_winch_motor.radio_max   = g.channel_winch_motor.radio_in;
+	g.channel_camera_servo.radio_max  = g.channel_camera_servo.radio_in;
+	g.channel_winch_clutch.radio_max  = g.channel_winch_clutch.radio_in;
 	g.rc_7.radio_max = g.rc_7.radio_in;
 	g.rc_8.radio_max = g.rc_8.radio_in;
 
-	g.channel_steer.radio_trim 		= g.channel_steer.radio_in;
-	g.channel_winch_motor.radio_trim = 1500;
+	channel_steer->radio_trim         = channel_steer->radio_in;
+	g.channel_winch_motor.radio_trim  = 1500;
 	g.channel_camera_servo.radio_trim = 1500;
 	g.channel_winch_clutch.radio_trim = 1500;
 	g.rc_7.radio_trim = 1500;
@@ -266,9 +266,9 @@ setup_radio(uint8_t argc, const Menu::arg *argv)
 		// ----------------------------------------------------------
 		read_radio();
 
-		g.channel_steer.update_min_max();
-		g.channel_throttle.update_min_max();
-                g.channel_throttle2.update_min_max();
+		channel_steer->update_min_max();
+		channel_throttle->update_min_max();
+		channel_throttle2->update_min_max();
 		g.channel_winch_motor.update_min_max();
 		g.channel_camera_servo.update_min_max();
 		g.channel_winch_clutch.update_min_max();
@@ -279,9 +279,9 @@ setup_radio(uint8_t argc, const Menu::arg *argv)
             while (cliSerial->available() > 0) {
                 cliSerial->read();
             }
-			g.channel_steer.save_eeprom();
-			g.channel_throttle.save_eeprom();
-                        g.channel_throttle2.save_eeprom();
+			channel_steer->save_eeprom();
+			channel_throttle->save_eeprom();
+			channel_throttle2->save_eeprom();
 			g.channel_winch_motor.save_eeprom();
 			g.channel_camera_servo.save_eeprom();
 			g.channel_winch_clutch.save_eeprom();
@@ -617,10 +617,10 @@ print_PID(PID * pid)
 static void
 print_radio_values()
 {
-	cliSerial->printf_P(PSTR("CH1: %d | %d | %d\n"), (int)g.channel_steer.radio_min, (int)g.channel_steer.radio_trim, (int)g.channel_steer.radio_max);
+	cliSerial->printf_P(PSTR("CH1: %d | %d | %d\n"), (int)channel_steer->radio_min, (int)channel_steer->radio_trim, (int)channel_steer->radio_max);
 	cliSerial->printf_P(PSTR("CH2: %d | %d | %d\n"), (int)g.channel_winch_motor.radio_min, (int)g.channel_winch_motor.radio_trim, (int)g.channel_winch_motor.radio_max);
-	cliSerial->printf_P(PSTR("CH3: %d | %d | %d\n"), (int)g.channel_throttle.radio_min, (int)g.channel_throttle.radio_trim, (int)g.channel_throttle.radio_max);
-	cliSerial->printf_P(PSTR("CH4: %d | %d | %d\n"), (int)g.channel_throttle2.radio_min, (int)g.channel_throttle2.radio_trim, (int)g.channel_throttle2.radio_max);
+	cliSerial->printf_P(PSTR("CH3: %d | %d | %d\n"), (int)channel_throttle->radio_min, (int)channel_throttle->radio_trim, (int)channel_throttle->radio_max);
+	cliSerial->printf_P(PSTR("CH4: %d | %d | %d\n"), (int)channel_throttle2->radio_min, (int)channel_throttle2->radio_trim, (int)channel_throttle2->radio_max);
 	cliSerial->printf_P(PSTR("CH5: %d | %d | %d\n"), (int)g.channel_camera_servo.radio_min, (int)g.channel_camera_servo.radio_trim, (int)g.channel_camera_servo.radio_max);
 	cliSerial->printf_P(PSTR("CH6: %d | %d | %d\n"), (int)g.channel_winch_clutch.radio_min, (int)g.channel_winch_clutch.radio_trim, (int)g.channel_winch_clutch.radio_max);
 	cliSerial->printf_P(PSTR("CH7: %d | %d | %d\n"), (int)g.rc_7.radio_min, (int)g.rc_7.radio_trim, (int)g.rc_7.radio_max);
@@ -666,10 +666,10 @@ radio_input_switch(void)
 	static int8_t bouncer = 0;
 
 
-	if (int16_t(g.channel_steer.radio_in - g.channel_steer.radio_trim) > 100) {
+	if (int16_t(channel_steer->radio_in - channel_steer->radio_trim) > 100) {
 	    bouncer = 10;
 	}
-	if (int16_t(g.channel_steer.radio_in - g.channel_steer.radio_trim) < -100) {
+	if (int16_t(channel_steer->radio_in - channel_steer->radio_trim) < -100) {
 	    bouncer = -10;
 	}
 	if (bouncer >0) {

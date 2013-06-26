@@ -19,9 +19,6 @@
 #define SONAR 0
 #define BARO 1
 
-#define SONAR_SOURCE_ADC 1
-#define SONAR_SOURCE_ANALOG_PIN 2
-
 // CH 7 control
 enum ch7_option {
     CH7_DO_NOTHING=0,
@@ -42,16 +39,10 @@ enum ch7_option {
 #define GPS_PROTOCOL_MTK19	6
 #define GPS_PROTOCOL_AUTO	7
 
-#define CH_STEER                CH_1
-#define CH_THROTTLE             CH_3
-#define CH_THROTTLE2            CH_4
-#define CH_WINCH_MOTOR          CH_2
-#define CH_WINCH_CLUTCH         CH_6
-
 // HIL enumerations
-#define HIL_MODE_DISABLED	0
-#define HIL_MODE_ATTITUDE	1
-#define HIL_MODE_SENSORS	2
+#define HIL_MODE_DISABLED			0
+#define HIL_MODE_ATTITUDE			1
+#define HIL_MODE_SENSORS			2
 
 // Auto Pilot modes
 // ----------------
@@ -70,7 +61,7 @@ enum mode {
 #define FAILSAFE_EVENT_THROTTLE (1<<0)
 #define FAILSAFE_EVENT_GCS      (1<<1)
 #define FAILSAFE_EVENT_RC       (1<<2)
-#define FAILSAFE_EVENT_CTD      (1<<3)
+//#define FAILSAFE_EVENT_CTD      (1<<3)
 
 // Commands - Note that APM now uses a subset of the MAVLink protocol commands.  See enum MAV_CMD in the GCS_Mavlink library
 #define CMD_BLANK 0 // there is no command stored in the mem location requested
@@ -124,32 +115,32 @@ enum ap_message {
 
 //  Logging parameters
 #define LOG_CTUN_MSG	        0x01
-#define LOG_NTUN_MSG    	0x02
-#define LOG_PERFORMANCE_MSG	0x03
-#define LOG_CMD_MSG		0x04
-#define LOG_CURRENT_MSG 	0x05
-#define LOG_STARTUP_MSG 	0x06
-#define LOG_SONAR_MSG 		0x07
+#define LOG_NTUN_MSG    		0x02
+#define LOG_PERFORMANCE_MSG		0x03
+#define LOG_CMD_MSG			    0x04
+#define LOG_CURRENT_MSG 		0x05
+#define LOG_STARTUP_MSG 		0x06
+#define LOG_SONAR_MSG 		    0x07
 #define LOG_ATTITUDE_MSG        0x08
 #define LOG_MODE_MSG            0x09
 #define LOG_COMPASS_MSG         0x0A
 
-#define TYPE_AIRSTART_MSG	0x00
+#define TYPE_AIRSTART_MSG		0x00
 #define TYPE_GROUNDSTART_MSG	0x01
-#define MAX_NUM_LOGS		100
+#define MAX_NUM_LOGS			100
 
 #define MASK_LOG_ATTITUDE_FAST 	(1<<0)
 #define MASK_LOG_ATTITUDE_MED 	(1<<1)
-#define MASK_LOG_GPS 		(1<<2)
-#define MASK_LOG_PM 		(1<<3)
-#define MASK_LOG_CTUN 		(1<<4)
-#define MASK_LOG_NTUN		(1<<5)
-#define MASK_LOG_MODE		(1<<6)
-#define MASK_LOG_IMU		(1<<7)
-#define MASK_LOG_CMD		(1<<8)
-#define MASK_LOG_CURRENT	(1<<9)
-#define MASK_LOG_SONAR   	(1<<10)
-#define MASK_LOG_COMPASS   	(1<<11)
+#define MASK_LOG_GPS 			(1<<2)
+#define MASK_LOG_PM 			(1<<3)
+#define MASK_LOG_CTUN 			(1<<4)
+#define MASK_LOG_NTUN			(1<<5)
+#define MASK_LOG_MODE			(1<<6)
+#define MASK_LOG_IMU			(1<<7)
+#define MASK_LOG_CMD			(1<<8)
+#define MASK_LOG_CURRENT		(1<<9)
+#define MASK_LOG_SONAR   		(1<<10)
+#define MASK_LOG_COMPASS   		(1<<11)
 
 // Waypoint Modes
 // ----------------
@@ -215,7 +206,12 @@ enum ap_message {
 #define AP_COMPASS_HIL       3
 
 // RV Rob Defines
+#define CH_STEER             CH_1
+#define CH_THROTTLE          CH_3
+#define CH_THROTTLE2         CH_4
+#define CH_WINCH_MOTOR       CH_2
+#define CH_WINCH_CLUTCH      CH_6
 #define CTD_DEPLOY_TIME_MS   2000  // Amount of time it takes the A-frame to deploy, added to cast time, in ms
-#define CTD_TIME_SNAG_FACTOR     2.2   // Time multiplier applied to depth before line is assumed snagged
+#define CTD_TIME_SNAG_FACTOR 3   // Time multiplier applied to depth before line is assumed snagged
 
 #endif // _DEFINES_H

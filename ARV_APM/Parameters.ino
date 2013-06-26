@@ -1,4 +1,4 @@
-/// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: t -*-
+/// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 /*
   ArduPlane parameter definitions
@@ -25,6 +25,11 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @User: Advanced
 	GSCALAR(log_bitmask,            "LOG_BITMASK",      DEFAULT_LOG_BITMASK),
 	GSCALAR(num_resets,             "SYS_NUM_RESETS",   0),
+
+    // @Param: RST_SWITCH_CH
+    // @DisplayName: Reset Switch Channel
+    // @Description: RC channel to use to reset to last flight mode	after geofence takeover.
+    // @User: Advanced
 	GSCALAR(reset_switch_chan,      "RST_SWITCH_CH",    0),
 
     // @Param: INITIAL_MODE
@@ -43,19 +48,17 @@ const AP_Param::Info var_info[] PROGMEM = {
 
     // @Param: BATT_VOLT_PIN
     // @DisplayName: Battery Voltage sensing pin
-    // @Description: Setting this to 0 ~ 13 will enable battery current sensing on pins A0 ~ A13.
-    // @Values: -1:Disabled, 0:A0, 1:A1, 13:A13
+    // @Description: Setting this to 0 ~ 13 will enable battery current sensing on pins A0 ~ A13. For the 3DR power brick on APM2.5 it should be set to 13. On the PX4 it should be set to 100.
+    // @Values: -1:Disabled, 0:A0, 1:A1, 13:A13, 100:PX4
     // @User: Standard
     GSCALAR(battery_volt_pin,    "BATT_VOLT_PIN",    1),
 
     // @Param: BATT_CURR_PIN
     // @DisplayName: Battery Current sensing pin
-    // @Description: Setting this to 0 ~ 13 will enable battery current sensing on pins A0 ~ A13.
-    // @Values: -1:Disabled, 1:A1, 2:A2, 12:A12
+    // @Description: Setting this to 0 ~ 13 will enable battery current sensing on pins A0 ~ A13. For the 3DR power brick on APM2.5 it should be set to 12. On the PX4 it should be set to 101. 
+    // @Values: -1:Disabled, 1:A1, 2:A2, 12:A12, 101:PX4
     // @User: Standard
     GSCALAR(battery_curr_pin,    "BATT_CURR_PIN",    2),
-
-
 
     // @Param: SYSID_THIS_MAV
     // @DisplayName: MAVLink system ID
@@ -108,7 +111,7 @@ const AP_Param::Info var_info[] PROGMEM = {
 
     // @Param: VOLT_DIVIDER
     // @DisplayName: Voltage Divider
-    // @Description: Used to convert the voltage of the voltage sensing pin (BATT_VOLT_PIN) to the actual battery's voltage (pin voltage * INPUT_VOLTS/1024 * VOLT_DIVIDER)
+    // @Description: Used to convert the voltage of the voltage sensing pin (BATT_VOLT_PIN) to the actual battery's voltage (pin_voltage * VOLT_DIVIDER). For the 3DR Power brick, this should be set to 10.1. For the PX4 using the PX4IO power supply this should be set to 1.
     // @User: Advanced
 	GSCALAR(volt_div_ratio,         "VOLT_DIVIDER",     VOLT_DIV_RATIO),
 
@@ -122,6 +125,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @DisplayName: Battery Capacity
     // @Description: Battery capacity in milliamp-hours (mAh)
     // @Units: mAh
+	// @User: Standard
 	GSCALAR(pack_capacity,          "BATT_CAPACITY",    HIGH_DISCHARGE),
 
     // @Param: XTRK_GAIN_SC
@@ -143,8 +147,8 @@ const AP_Param::Info var_info[] PROGMEM = {
 
 	// @Param: AUTO_TRIGGER_PIN
 	// @DisplayName: Auto mode trigger pin
-	// @Description: pin number to use to trigger start of auto mode. If set to -1 then don't use a trigger, otherwise this is a pin number which if held low in auto mode will start the motor, and otherwise will force the throttle off. This can be used in combination with INITIAL_MODE to give a 'press button to start' rover with no receiver.
-	// @Values: -1:Disabled,0-9:TiggerPin
+	// @Description: pin number to use to enable the throttle in auto mode. If set to -1 then don't use a trigger, otherwise this is a pin number which if held low in auto mode will enable the motor to run. If the switch is released while in AUTO then the motor will stop again. This can be used in combination with INITIAL_MODE to give a 'press button to start' rover with no receiver.
+	// @Values: -1:Disabled,0-8:TiggerPin
 	// @User: standard
 	GSCALAR(auto_trigger_pin,        "AUTO_TRIGGER_PIN", -1),
 
@@ -164,7 +168,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 100
     // @Increment: 0.1
     // @User: Standard
-	GSCALAR(speed_cruise,        "CRUISE_SPEED",    4),
+	GSCALAR(speed_cruise,        "CRUISE_SPEED",    5),
 
     // @Param: SPEED_TURN_GAIN
     // @DisplayName: Target speed reduction while turning
@@ -173,7 +177,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-	GSCALAR(speed_turn_gain,    "SPEED_TURN_GAIN",  40),
+	GSCALAR(speed_turn_gain,    "SPEED_TURN_GAIN",  50),
 
     // @Param: SPEED_TURN_DIST
     // @DisplayName: Distance to turn to start reducing speed
@@ -191,13 +195,36 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @User: Standard
 	GSCALAR(ch7_option,             "CH7_OPTION",          CH7_OPTION),
 
+    // @Group: RC1_
+    // @Path: ../libraries/RC_Channel/RC_Channel.cpp
 	GGROUP(channel_steer,           "RC1_", RC_Channel),
-	GGROUP(channel_winch_motor,     "RC2_", RC_Channel),
+
+    // @Group: RC2_
+    // @Path: ../libraries/RC_Channel/RC_Channel.cpp
+	GGROUP(channel_winch_motor,     "RC2_", RC_Channel_aux),
+
+    // @Group: RC3_
+    // @Path: ../libraries/RC_Channel/RC_Channel.cpp
 	GGROUP(channel_throttle,        "RC3_", RC_Channel),
-	GGROUP(channel_throttle2,       "RC4_", RC_Channel),
-	GGROUP(channel_camera_servo,    "RC5_", RC_Channel),
-	GGROUP(channel_winch_clutch,    "RC6_", RC_Channel),
+
+    // @Group: RC4_
+    // @Path: ../libraries/RC_Channel/RC_Channel.cpp
+	GGROUP(channel_throttle2,       "RC4_", RC_Channel_aux),
+
+    // @Group: RC5_
+    // @Path: ../libraries/RC_Channel/RC_Channel.cpp
+	GGROUP(channel_camera_servo,    "RC5_", RC_Channel_aux),
+
+    // @Group: RC6_
+    // @Path: ../libraries/RC_Channel/RC_Channel.cpp
+	GGROUP(channel_winch_clutch,    "RC6_", RC_Channel_aux),
+
+    // @Group: RC7_
+    // @Path: ../libraries/RC_Channel/RC_Channel.cpp
 	GGROUP(rc_7,                    "RC7_", RC_Channel_aux),
+
+    // @Group: RC8_
+    // @Path: ../libraries/RC_Channel/RC_Channel.cpp
 	GGROUP(rc_8,                    "RC8_", RC_Channel_aux),
 
     // @Param: THR_MIN
@@ -274,6 +301,8 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Param: FS_THR_VALUE
     // @DisplayName: Throttle Failsafe Value
     // @Description: The PWM level on channel 3 below which throttle sailsafe triggers.
+    // @Range: 925 1100
+    // @Increment: 1
     // @User: Standard
 	GSCALAR(fs_throttle_value,      "FS_THR_VALUE",     910),
 
@@ -309,7 +338,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 100
     // @Increment: 0.1
 	// @User: Standard
-	GSCALAR(sonar_turn_time, "SONAR_TURN_TIME", 1.0f),
+	GSCALAR(sonar_turn_time,    "SONAR_TURN_TIME",     1.0f),
 
 	// @Param: SONAR_DEBOUNCE
 	// @DisplayName: Sonar debounce count
@@ -317,7 +346,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 1 100
     // @Increment: 1
 	// @User: Standard
-	GSCALAR(sonar_debounce, "SONAR_DEBOUNCE", 2),
+	GSCALAR(sonar_debounce,   "SONAR_DEBOUNCE",    2),
 
     // @Param: MODE_CH
     // @DisplayName: Mode channel
@@ -367,8 +396,8 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @User: Standard
 	GSCALAR(mode6,           "MODE6",         MODE_6),
 
-	GSCALAR(command_total,   "CMD_TOTAL",     0),
-	GSCALAR(command_index,   "CMD_INDEX",     0),
+	GSCALAR(command_total,          "CMD_TOTAL",        0),
+	GSCALAR(command_index,          "CMD_INDEX",        0),
 
     // @Param: WP_RADIUS
     // @DisplayName: Waypoint radius
@@ -377,26 +406,42 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 1000
     // @Increment: 0.1
     // @User: Standard
-	GSCALAR(waypoint_radius,  "WP_RADIUS",    2.0f),
+	GSCALAR(waypoint_radius,        "WP_RADIUS",        2.0f),
 
-	GGROUP(pidNavSteer,       "HDNG2STEER_",  PID),
-	GGROUP(pidServoSteer,     "STEER2SRV_",   PID),
-	GGROUP(pidSpeedThrottle,  "SPEED2THR_",   PID),
+	GGROUP(pidNavSteer,             "HDNG2STEER_",  PID),
+	GGROUP(pidServoSteer,           "STEER2SRV_",   PID),
+	GGROUP(pidSpeedThrottle,        "SPEED2THR_", PID),
 
 	// variables not in the g class which contain EEPROM saved variables
-	GOBJECT(compass,          "COMPASS_",	  Compass),
-	GOBJECT(gcs0,             "SR0_",         GCS_MAVLINK),
-	GOBJECT(gcs3,		  "SR3_",         GCS_MAVLINK),
+
+    // @Group: COMPASS_
+    // @Path: ../libraries/AP_Compass/Compass.cpp
+	GOBJECT(compass,                "COMPASS_",	Compass),
+
+    // @Group: SCHED_
+    // @Path: ../libraries/AP_Scheduler/AP_Scheduler.cpp
+    GOBJECT(scheduler, "SCHED_", AP_Scheduler),
+
+    // @Group: RCMAP_
+    // @Path: ../libraries/AP_RCMapper/AP_RCMapper.cpp
+    // GOBJECT(rcmap,                 "RCMAP_",         RCMapper),
+
+	GOBJECT(gcs0,					"SR0_",     GCS_MAVLINK),
+	GOBJECT(gcs3,					"SR3_",     GCS_MAVLINK),
 
     // @Group: SONAR_
     // @Path: ../libraries/AP_RangeFinder/AP_RangeFinder_analog.cpp
-    GOBJECT(sonar,                "SONAR_",       AP_RangeFinder_analog),
+    GOBJECT(sonar,                  "SONAR_", AP_RangeFinder_analog),
 
     // @Group: SONAR2_
     // @Path: ../libraries/AP_RangeFinder/AP_RangeFinder_analog.cpp
-    GOBJECT(sonar2,               "SONAR2_",      AP_RangeFinder_analog),
-    
-        //---------- Added for Winch Controll ---------- JMS June 2013 ----------//
+    GOBJECT(sonar2,                 "SONAR2_", AP_RangeFinder_analog),
+
+    // @Group: INS_
+    // @Path: ../libraries/AP_InertialSensor/AP_InertialSensor.cpp
+    GOBJECT(ins,                            "INS_", AP_InertialSensor),
+
+//---------- Added for Winch Controll ---------- JMS June 2013 ----------//
   
     // @Param: WINCH_SAMPLE
     // @DisplayName: Winch sampling motor speed
@@ -420,7 +465,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 1 100
     // @Increment: 1
     // @User: Standard
-	GSCALAR(aframe_debounce, "AFRAME_DEBOUNCE", 2),        
+	GSCALAR(aframe_debounce, "AFRAME_DEBOUNCE", 2),    
 
     // @Param: AFRAME_AFT_PIN
     // @DisplayName: Aframe Aft proximity sensing pin
@@ -428,7 +473,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Values: -1:Disabled, 0:A0, 1:A1, 13:A13
     // @User: Standard
         GSCALAR(aframe_aft_pin,    "AFRAME_AFT_PIN",    0),
-
+        
     // @Param: AFRAME_FOR_PIN
     // @DisplayName: Aframe Forward proximity sensing pin
     // @Description: Setting this to 0 ~ 13 will enable proximity sensing on pins A0 ~ A13.
@@ -449,15 +494,8 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Values: 0 100
     // @User: Standard
         GSCALAR(ctd_max_depth,    "CTD_MAX_DEPTH",    100),  
-
-        //---------- END Added ----------//
-
-
-#if HIL_MODE == HIL_MODE_DISABLED
-    // @Group: INS_
-    // @Path: ../libraries/AP_InertialSensor/AP_InertialSensor.cpp
-    GOBJECT(ins,                            "INS_", AP_InertialSensor),
-#endif
+        
+//---------- END Added ----------//
 
 #if CONFIG_HAL_BOARD == HAL_BOARD_AVR_SITL
     // @Group: SIM_
