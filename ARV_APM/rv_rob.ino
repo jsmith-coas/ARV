@@ -19,7 +19,7 @@ static void read_aframe(void)
                 gcs_send_text_fmt(PSTR("Aframe AFT %i"), aframe.aft_sensor_state);                
             }     
             
-            aframe.detected_time_ms = hal.scheduler->millis();                            
+            aframe.detected_time_ms = millis();                            
         }
     }
     
@@ -39,12 +39,12 @@ static void read_aframe(void)
                 gcs_send_text_fmt(PSTR("Aframe FOR %i"), aframe.for_sensor_state);                
             }  
             
-            aframe.detected_time_ms = hal.scheduler->millis();                            
+            aframe.detected_time_ms = millis();                            
         }
     }    
     
     // no aframe move recently detected - reset after 1 second of inactivity   
-    if (hal.scheduler->millis() > aframe.detected_time_ms + 1000) { 
+    if (millis() > aframe.detected_time_ms + 1000) { 
         aframe.aft_sensor_count = 0;
         aframe.for_sensor_count = 0;
         }    
@@ -60,12 +60,13 @@ static void set_winch(void) {
         g.channel_winch_motor.radio_out  = hal.rcin->read(CH_WINCH_MOTOR);     // Read winch motor commands through
     } //else let the ctd_cast_do function set the a-frame/winch servos
     
-    //ctd_cast_do();  // Check to see if we need to be casting the CTD
+    ctd_cast_do();  // Check to see if we need to be casting the CTD
   
     // Limit motor speed depending on A-frame position
         //NOTE: sensor_state is HIGH when open, LOW when closed (pulls to ground)
     if (aframe.for_sensor_state == 0) {                                                // --Aframe is retracted
         g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;               // Disable the winch motor  
+        // NOTE: To get the full 180° range of the servo, RC_INPUT_MAX_PULSEWIDTH and RC_INPUT_MIN_PULSEWIDTH must be changed in libraries/AP_HAL/RCInput.h    
         g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_max;         // Point camera forward           
     } else if (aframe.aft_sensor_state == 1) {                                         // --Aframe is retracting
         g.channel_winch_motor.radio_out = constrain_int16(g.channel_winch_motor.radio_out, // Limit winch motor to slow speed
@@ -88,11 +89,11 @@ static bool verify_ctd_cast()
 {
     if (ctd.cast_depth_m > 0) {   // There is a CTD cast at this waypoint
         if (ctd.cast_end_time_ms == 0) {    // The cast has not yet been started happened, lets start it
-            ctd.cast_end_time_ms = hal.scheduler->millis() + CTD_DEPLOY_TIME_MS  + (ctd.cast_depth_m * g.ctd_depth_to_time_ms);   
-//            gcs_send_text_fmt(PSTR("Started CTD Cast, depth #%i, start %d, end %d"),
-//                                  (unsigned)ctd.cast_depth_m), hal.scheduler->millis(), ctd.cast_end_time_ms;            
+            ctd.cast_end_time_ms = millis() + CTD_DEPLOY_TIME_MS  + (ctd.cast_depth_m * g.ctd_depth_to_time_ms); 
+            gcs_send_text_fmt(PSTR("Started CTD, %im, %ius"), ctd.cast_depth_m, (ctd.cast_end_time_ms - millis()));                          
             return false;
         } else {
+            gcs_send_text_fmt(PSTR("Current CTD, remaining %ius"), (ctd.cast_end_time_ms - millis()));                          
             return ctd.cast_done;  // Check to see what the status of the CTD cast is
         }
     }
@@ -105,8 +106,8 @@ static bool verify_ctd_cast()
 static void ctd_cast_do()
 {
     if (ctd.cast_end_time_ms > 0  && !ctd.cast_done) {  // CTD underway
-        if (hal.scheduler->millis() >= (ctd.cast_end_time_ms * CTD_TIME_SNAG_FACTOR)) {  // CTD cast still in allotted time
-            if (hal.scheduler->millis() < ctd.cast_end_time_ms) {
+        if (millis() < (ctd.cast_end_time_ms * CTD_TIME_SNAG_FACTOR)) {  // CTD cast still in allotted time
+            if (millis() < ctd.cast_end_time_ms) {
                 winch_freefall();
             } else {
                 winch_retract(g.w_motor_sample);        // winch to sample speed
@@ -117,12 +118,12 @@ static void ctd_cast_do()
                 }                  
             } 
         } else {
+            gcs_send_text_fmt(PSTR("CTD Snagged"));                    
             ctd.cast_done = true;
         }
     // } else { // CTD cast is complete or not required, don't need to do anything here
     }
 }
-
 
 
 /*****************************************
@@ -132,7 +133,6 @@ static void winch_hold()
 {
     g.channel_winch_motor.radio_out = g.channel_winch_motor.radio_trim;          // turn off the winch's motor   
     g.channel_winch_clutch.radio_out = g.channel_winch_clutch.radio_min;         // engage the winch clutch
-        // NOTE: To get the full 180° range of the servo, RC_INPUT_MAX_PULSEWIDTH and RC_INPUT_MIN_PULSEWIDTH must be changed in libraries/AP_HAL/RCInput.h    
 }    
   
 static void winch_freefall()

@@ -1,6 +1,6 @@
 /// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#define THISFIRMWARE "ArduRover v2.42beta3"
+#define THISFIRMWARE "ArduRover v2.42beta3.1"
 
 /* 
 This is the RV_ROB_APM firmware. It was originally derived from APMrover2
@@ -28,16 +28,16 @@ version 2.1 of the License, or (at your option) any later version.
 // Rec ch2: Winch motor controll
 // Rec ch3: Throttle1 (PORT)
 // Rec ch4: Throttle2 (STBD)
-// Rec ch5: not used
+// Rec ch5: Camera Servo
 // Rec ch6: Winch clutch servo controll
 // Rec ch7: Option channel to 2 position switch
 // Rec ch8: Mode channel to 6 position switch
 // APM OUTPUT
-// Ch1: Rudder servo (direction)
+// Ch1: Rudder servo
 // Ch2: Winch motor ESC
 // Ch3: to the motor1 ESC (PORT)
 // Ch4: to the motor2 ESC (STBD)
-// Ch5: not used
+// Ch5: Camera Servo
 // Ch6: Winch clutch servo
 // Ch7: not used
 // Ch8: not used

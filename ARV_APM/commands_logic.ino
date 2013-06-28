@@ -212,7 +212,9 @@ static bool verify_nav_wp()
         gcs_send_text_fmt(PSTR("Passed Waypoint #%i dist %um"),
                           (unsigned)nav_command_index,
                           (unsigned)get_distance(&current_loc, &next_WP));
-        return true;
+        // Waypoint has been passed, is the CTD cast complete?
+        return verify_ctd_cast();
+//        return true;
     }
 
     return false;

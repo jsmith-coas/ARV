@@ -151,8 +151,7 @@ static void set_servos(void)
 {
     int16_t last_throttle = channel_throttle->radio_out;
 
-	if ((control_mode == MANUAL || control_mode == LEARNING) &&
-        (g.skid_steer_out == g.skid_steer_in)) {
+    if ((control_mode == MANUAL || control_mode == LEARNING) && (g.skid_steer_out == g.skid_steer_in)) {
         // do a direct pass through of radio values
         channel_steer->radio_out       = channel_steer->read();
         channel_throttle->radio_out    = channel_throttle->read();
@@ -162,12 +161,12 @@ static void set_servos(void)
             channel_throttle->radio_out = channel_throttle->radio_trim;
             channel_throttle2->radio_out = channel_throttle2->radio_trim;
         }
-	} else {       
-        channel_steer->calc_pwm();
-		channel_throttle->servo_out = constrain_int16(channel_throttle->servo_out, 
+    } else {       
+            channel_steer->calc_pwm();
+    	    channel_throttle->servo_out = constrain_int16(channel_throttle->servo_out, 
                                                        g.throttle_min.get(), 
                                                        g.throttle_max.get());
-		channel_throttle2->servo_out = constrain_int16(channel_throttle->servo_out, 
+    	    channel_throttle2->servo_out = constrain_int16(channel_throttle->servo_out, 
                                                        g.throttle_min.get(), 
                                                        g.throttle_max.get());                                                       
 
@@ -203,7 +202,8 @@ static void set_servos(void)
             channel_throttle->calc_pwm();
         }
     }
-
+    
+    set_winch();    
 
 #if HIL_MODE == HIL_MODE_DISABLED || HIL_SERVOS
 	// send values to the PWM timers for output
