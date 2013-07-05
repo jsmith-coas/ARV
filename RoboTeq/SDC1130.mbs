@@ -1,0 +1,27 @@
+' 5 July 2013 - Jed Smith
+' This script transmits the Safety Stop flag onto Digital Output #2
+
+top:
+
+MotorCurrent = GetValue(_MOTAMPS)
+MotorCommand = GetValue(_MOTPWR)
+ThresCommand = -45 'Value at which motor current is > 0
+
+IF MotorCommand < ThresCommand THEN
+		'NOTE: Motor commands are NEGATIVE since reverse is used to bring in line.
+	IF MotorCurrent = 0 THEN
+		SetCommand(_DSET, 2) 'Activate Digital Output 2
+	ELSE
+		SetCommand(_DRES, 2)
+	END IF
+	
+	wait(5) 'Wait 25ms
+	
+ELSE
+	SetCommand(_DRES, 2) 'Make sure Output gets reset
+	
+END IF
+
+wait(50) 'Wait 25ms
+
+GOTO top
