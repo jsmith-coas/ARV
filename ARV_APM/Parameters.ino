@@ -449,7 +449,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 2000 ms
     // @Increment: 1
     // @User: Standard    
-  	GSCALAR(w_motor_sample,   "WINCH_SAMPLE",     1680),
+  	GSCALAR(w_motor_sample,   "WINCH_SAMPLE",     1360),
   
     // @Param: WINCH_SLOW
     // @DisplayName: Winch slow motor speed
@@ -457,7 +457,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Range: 0 2000 ms
     // @Increment: 1
     // @User: Standard 	
-        GSCALAR(w_motor_slow,      "WINCH_SLOW",      1630),
+        GSCALAR(w_motor_slow,      "WINCH_SLOW",      1410),
         
     // @Param: AFRAME_DEBOUNCE
     // @DisplayName: A-frame debounce count
@@ -480,6 +480,13 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Values: -1:Disabled, 0:A0, 1:A1, 13:A13
     // @User: Standard
         GSCALAR(aframe_for_pin,    "AFRAME_FOR_PIN",    1),  
+
+    // @Param: WINCH_STALL_PIN
+    // @DisplayName: Winch motor sensing pin to detect Safety Stops from the SDC1130 motor controller
+    // @Description: Setting this to 0 ~ 13 will enable proximity sensing on pins A0 ~ A13.
+    // @Values: -1:Disabled, 0:A0, 1:A1, 13:A13
+    // @User: Standard
+        GSCALAR(winch_stall_pin,    "WINCH_STALL_PIN",    2),  
   
      // @Param: CTD_DEPTH_TO_TIME_MS
     // @DisplayName: CTD multiplier for converting requested depth to free-spooling time
@@ -488,7 +495,7 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @User: Standard
         GSCALAR(ctd_depth_to_time_ms,    "CTD_D-T_MS",    1000),
 
-    // @Param: AFRAME_FOR_PIN
+    // @Param: CTD_MAX_DEPTH
     // @DisplayName: Max CTD cast depth
     // @Description: This is the max safe CTD casting depth. Used to bound CTD cast requests
     // @Values: 0 100

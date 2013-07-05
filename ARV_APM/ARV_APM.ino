@@ -419,6 +419,7 @@ static struct {
     uint16_t cast_depth_m;
     uint32_t cast_end_time_ms;
     bool     cast_done;
+    bool     cast_snagged;
 } ctd;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -668,7 +669,7 @@ static void fast_loop()
 	ahrs.update();
 
     read_sonars();
-    read_aframe();
+    read_winch();
 
 	// uses the yaw from the DCM to give more accurate turns
 	calc_bearing_error();

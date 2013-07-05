@@ -1,7 +1,7 @@
 /*****************************************
 * Sensors - Read the A-frame state
 *****************************************/
-static void read_aframe(void)
+static void read_winch(void)
 {
     //read aft sensor
     if (g.aframe_aft_pin != -1) {                                               //Sensor exists, read value
@@ -47,7 +47,15 @@ static void read_aframe(void)
     if (millis() > aframe.detected_time_ms + 1000) { 
         aframe.aft_sensor_count = 0;
         aframe.for_sensor_count = 0;
-        }    
+    }    
+    
+    if (g.winch_stall_pin != -1) {
+        // Read in stall pin from SDC1130 RoboTeq Motor Controller
+        if (check_digital_pin(g.winch_stall_pin) == 0) ctd.cast_snagged = true;
+        else ctd.cast_snagged = false;
+          // SDC1130 set to have pin float if Safety Stop is OFF, pulled to GND if ON
+          // This should correspond to cast_snagged = 1 if S.S. if OFF, or 0 if S.S. is ON
+    }
 }
 
 
@@ -69,14 +77,14 @@ static void set_winch(void) {
         // NOTE: To get the full 180° range of the servo, RC_INPUT_MAX_PULSEWIDTH and RC_INPUT_MIN_PULSEWIDTH must be changed in libraries/AP_HAL/RCInput.h    
         g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_max;         // Point camera forward           
     } else if (aframe.aft_sensor_state == 1) {                                         // --Aframe is retracting
-        g.channel_winch_motor.radio_out = constrain_int16(g.channel_winch_motor.radio_out, // Limit winch motor to slow speed
-                                                          g.channel_winch_motor.radio_trim, 
-                                                          g.w_motor_slow);
+        g.channel_winch_motor.radio_out = constrain_int16(g.channel_winch_motor.radio_out, // Limit winch motor to slow speed, NOTE: motor direction reversed, so below trim is ON
+                                                          g.w_motor_slow, 
+                                                          g.channel_winch_motor.radio_trim);
         g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;           // Point camera aft                                                                                                                                   
     } else {                                                                           // --Aframe is extended
         g.channel_winch_motor.radio_out = constrain_int16(g.channel_winch_motor.radio_out, // Limit winch motor to high speed
-                                                          g.channel_winch_motor.radio_trim, 
-                                                          g.channel_winch_motor.radio_max);
+                                                          g.channel_winch_motor.radio_min, 
+                                                          g.channel_winch_motor.radio_trim);
         g.channel_camera_servo.radio_out = g.channel_camera_servo.radio_min;           // Point camera aft                                                                                                                                                                                             
     }
 
@@ -106,7 +114,7 @@ static bool verify_ctd_cast()
 static void ctd_cast_do()
 {
     if (ctd.cast_end_time_ms > 0  && !ctd.cast_done) {  // CTD underway
-        if (millis() < (ctd.cast_end_time_ms * CTD_TIME_SNAG_FACTOR)) {  // CTD cast still in allotted time
+        if ((millis() < (ctd.cast_end_time_ms * CTD_TIME_SNAG_FACTOR)) || ctd.cast_snagged) {  // CTD cast still in allotted time
             if (millis() < ctd.cast_end_time_ms) {
                 winch_freefall();
             } else {
@@ -118,7 +126,8 @@ static void ctd_cast_do()
                 }                  
             } 
         } else {
-            gcs_send_text_fmt(PSTR("CTD Snagged"));                    
+            if (ctd.cast_snagged) gcs_send_text_fmt(PSTR("CTD Safety Stop")); //JMS - need to do more here. Do we try again once?
+            else gcs_send_text_fmt(PSTR("CTD Exceeded Time"));
             ctd.cast_done = true;
         }
     // } else { // CTD cast is complete or not required, don't need to do anything here
