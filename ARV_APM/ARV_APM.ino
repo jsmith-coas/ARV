@@ -1,6 +1,6 @@
 /// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#define THISFIRMWARE "ArduRover v2.42beta3.1"
+#define THISFIRMWARE "ArduRover v2.42beta3.2"
 
 /* 
 This is the RV_ROB_APM firmware. It was originally derived from APMrover2
@@ -419,7 +419,8 @@ static struct {
     uint16_t cast_depth_m;
     uint32_t cast_end_time_ms;
     bool     cast_done;
-    bool     cast_snagged;
+    bool     cast_snagged;      // Snag detected
+//    bool     cast_snag_tested;  // Snag unable to auto-free
 } ctd;
 
 ////////////////////////////////////////////////////////////////////////////////

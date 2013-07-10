@@ -501,6 +501,15 @@ const AP_Param::Info var_info[] PROGMEM = {
     // @Values: 0 100
     // @User: Standard
         GSCALAR(ctd_max_depth,    "CTD_MAX_DEPTH",    100),  
+
+    // @Param: CTD_THROTTLE_MAX  
+    // @DisplayName: Maximum Throttle during CTD casting
+    // @Description: The maximum throttle setting to which the autopilot will apply during CTD casts.
+    // @Units: Percent
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Standard
+        GSCALAR(ctd_throttle_max,    "CTD_THROTTLE_MAX",    20),         
         
 //---------- END Added ----------//
 

@@ -140,6 +140,7 @@ public:
         k_param_winch_stall_pin,
         k_param_ctd_depth_to_time_ms = 1000,
         k_param_ctd_max_depth = 100,
+        k_param_ctd_throttle_max = 20,
         
         //---------- END Added ----------//  
 
@@ -268,6 +269,7 @@ public:
     AP_Int8    winch_stall_pin;
     AP_Int16   ctd_depth_to_time_ms;
     AP_Int8    ctd_max_depth;
+    AP_Int8    ctd_throttle_max;
     
 //---------- END Added ----------//      
 

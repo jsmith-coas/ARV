@@ -174,7 +174,7 @@ static void set_servos(void)
             // suppress throttle if in failsafe
             channel_throttle->servo_out = 0;
             channel_throttle2->servo_out = 0;
-        }
+        }        
 
         // convert 0 to 100% into PWM
         channel_throttle->calc_pwm();
@@ -200,11 +200,11 @@ static void set_servos(void)
             channel_throttle->servo_out = 100*motor2;
             channel_steer->calc_pwm();
             channel_throttle->calc_pwm();
-        }
+        }        
     }
     
-    set_winch();    
-
+    set_winch();   // Note: may limit throttle settings during CTD casts 
+    
 #if HIL_MODE == HIL_MODE_DISABLED || HIL_SERVOS
 	// send values to the PWM timers for output
 	// ----------------------------------------
