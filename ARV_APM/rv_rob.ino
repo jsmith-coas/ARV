@@ -98,13 +98,14 @@ static bool verify_ctd_cast()
     if (ctd.cast_depth_m > 0) {   // There is a CTD cast at this waypoint
         if (ctd.cast_end_time_ms == 0) {    // The cast has not yet been started happened, lets start it
             ctd.cast_end_time_ms = millis() + CTD_DEPLOY_TIME_MS  + (ctd.cast_depth_m * g.ctd_depth_to_time_ms); 
-            gcs_send_text_fmt(PSTR("Started CTD, alt %im, depth %im, %ims"), (next_WP.alt/100), ctd.cast_depth_m, (ctd.cast_end_time_ms - millis()));                          
+            gcs_send_text_fmt(PSTR("Started CTD, %im, %ims"), ctd.cast_depth_m, (ctd.cast_end_time_ms - millis()));                          
             return false;
         } else {                            // The cast has been started
             //gcs_send_text_fmt(PSTR("Current CTD, remaining %ims"), (ctd.cast_end_time_ms - millis()));                          
             return ctd.cast_done;  // Check to see what the status of the CTD cast is
         }
     } else {    // There is no CTD cast at this waypoint
+        gcs_send_text_fmt(PSTR("No CTD cast at this waypoint"));                          
         return true;
     }
 }   
@@ -179,5 +180,5 @@ static void ctd_cast_set_for_next()
     // NOTE: using the WayPoints intended altitude since it isn't used on the rover and Mission Planner changes were not working.
       // MUST use ABSOLUTE WayPoint altitude for this to work correctly, otherwise home's gps altitude is added to cast depth
     // NOTE: Min cast depth set to 3m to ensure winch is fully untangled
-    ctd.cast_depth_m = constrain_int16(next_WP.alt/100, 3, g.ctd_max_depth); //convert from cm to m for cast depth, constrain to winch line length
+    ctd.cast_depth_m = constrain_int16(next_WP.alt/100, 0, g.ctd_max_depth); //convert from cm to m for cast depth, constrain to winch line length
 }
